@@ -336,7 +336,6 @@ class InfoBarUnhandledKey:
 			self.unhandledKeyDialog.hide()
 			if self.closeSIB(key) and self.secondInfoBarScreen and self.secondInfoBarScreen.shown:
 				self.secondInfoBarScreen.hide()
-				self.secondInfoBarWasShown = False
 		if flag != 4:
 			if flag == 0:
 				self.flags = self.uflags = 0
@@ -452,7 +451,6 @@ class InfoBarShowHide(InfoBarScreenSaver):
 			self.secondInfoBarScreenSimple.hide()
 		if self.InfoBarAdds:
 			self.InfoBarAdds.hide()
-		self.secondInfoBarWasShown = False
 		self.hideVBILineScreen.hide()
 
 	def __onShow(self):
@@ -1478,13 +1476,8 @@ class InfoBarEPG:
 		if answer is not None:
 			answer[1]()
 
-	def openSimilarList(self):
-		id = self.event and self.event.getEventId()
-		refstr = str(self.currentService)
-		if id is not None:
-			self.hide()
-			self.secondInfoBarWasShown = False
-			self.session.open(EPGSelection, refstr, None, id)
+	def openSimilarList(self, eventid, refstr):
+		self.session.open(EPGSelection, refstr, None, eventid)
 
 	def getNowNext(self):
 		epglist = []
