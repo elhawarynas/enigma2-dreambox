@@ -6,6 +6,7 @@
 #include <lib/gdi/accel.h>
 
 #include <time.h>
+#include <sys/time.h>
 
 #ifdef HAVE_OSDANIMATION
 #include <lib/base/cfile.h>
