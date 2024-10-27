@@ -118,7 +118,7 @@ public:
 typedef struct _GstElement GstElement;
 
 typedef enum { atUnknown, atMPEG, atMP3, atAC3, atDTS, atAAC, atPCM, atOGG, atFLAC, atWMA, atDRA } audiotype_t;
-typedef enum { stUnknown, stPlainText, stSSA, stASS, stSRT, stVOB, stPGS } subtype_t;
+typedef enum { stUnknown, stPlainText, stSSA, stASS, stSRT, stVOB, stPGS, stDVB } subtype_t;
 typedef enum { ctNone, ctMPEGTS, ctMPEGPS, ctMKV, ctAVI, ctMP4, ctVCD, ctCDA, ctASF, ctOGG, ctWEBM, ctDRA } containertype_t;
 
 class eServiceMP3: public iPlayableService, public iPauseableService,
@@ -129,6 +129,7 @@ class eServiceMP3: public iPlayableService, public iPauseableService,
 public:
 	virtual ~eServiceMP3();
 
+	void setCacheEntry(bool isAudio, int pid);
 		// iPlayableService
 	RESULT connectEvent(const sigc::slot<void(iPlayableService*,int)> &event, ePtr<eConnection> &connection);
 	RESULT start();
@@ -144,13 +145,13 @@ public:
 	RESULT subtitle(ePtr<iSubtitleOutput> &ptr);
 	RESULT audioDelay(ePtr<iAudioDelay> &ptr);
 	RESULT cueSheet(ePtr<iCueSheet> &ptr);
-	RESULT tap(ePtr<iTapService> &ptr) { ptr = 0; return -1; };
 
 		// not implemented (yet)
 	RESULT setTarget(int target, bool noaudio = false) { return -1; }
 	RESULT frontendInfo(ePtr<iFrontendInformation> &ptr) { ptr = 0; return -1; }
 	RESULT subServices(ePtr<iSubserviceList> &ptr) { ptr = 0; return -1; }
 	RESULT timeshift(ePtr<iTimeshiftService> &ptr) { ptr = 0; return -1; }
+	RESULT tap(ePtr<iTapService> &ptr) { ptr = nullptr; return -1; };
 //	RESULT cueSheet(ePtr<iCueSheet> &ptr) { ptr = 0; return -1; }
 
 		// iCueSheet
@@ -222,6 +223,8 @@ public:
 			:pad(0), type(atUnknown)
 		{
 		}
+		bool operator==(const audioStream &lhs) const { return (lhs.type == type) && (lhs.language_code == language_code) && (lhs.codec == codec); }
+		bool operator!=(const audioStream &lhs) const { return (lhs.type != type) || (lhs.language_code != language_code) || (lhs.codec != codec); }
 	};
 	struct subtitleStream
 	{
@@ -233,6 +236,8 @@ public:
 			:pad(0)
 		{
 		}
+		bool operator==(const subtitleStream &lhs) const { return (lhs.type == type) && (lhs.language_code == language_code) && (lhs.title == title); }
+		bool operator!=(const subtitleStream &lhs) const { return (lhs.type != type) || (lhs.language_code != language_code) || (lhs.title != title); }
 	};
 	struct sourceStream
 	{
@@ -336,6 +341,7 @@ private:
 	GstElement *m_gst_playbin;
 	GstTagList *m_stream_tags;
 	bool m_coverart;
+	std::list<eDVBSubtitlePage> m_dvb_subtitle_pages;
 
 	eFixedMessagePump<ePtr<GstMessageContainer> > m_pump;
 
@@ -370,10 +376,15 @@ private:
 	typedef std::pair<uint32_t, subtitle_page_t> subtitle_pages_map_pair_t;
 	subtitle_pages_map_t m_subtitle_pages;
 	ePtr<eTimer> m_subtitle_sync_timer;
+	ePtr<eTimer> m_dvb_subtitle_sync_timer;
+	ePtr<eDVBSubtitleParser> m_dvb_subtitle_parser;
+	ePtr<eConnection> m_new_dvb_subtitle_page_connection;
+	void newDVBSubtitlePage(const eDVBSubtitlePage &p);
 
 	pts_t m_prev_decoder_time;
 	int m_decoder_time_valid_state;
 
+	void pushDVBSubtitles();
 	void pushSubtitles();
 	void pullSubtitle(GstBuffer *buffer);
 	void sourceTimeout();
