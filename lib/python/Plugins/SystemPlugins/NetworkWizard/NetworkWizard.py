@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from Screens.WizardLanguage import WizardLanguage
+from Screens.Wizard import Wizard
 from Screens.HelpMenu import Rc
 from Screens.MessageBox import MessageBox
 from Components.Pixmap import Pixmap
@@ -19,7 +19,7 @@ def isFHD():
     return desktopSize[0] > 1280 and desktopSize[0] <= 1920
 
 
-class NetworkWizard(WizardLanguage, Rc):
+class NetworkWizard(Wizard, Rc):
 	if isFHD:
 		skin = """
 			<screen position="0,0" size="1920,1080" title="Welcome..." flags="wfNoBorder" >
@@ -123,7 +123,7 @@ class NetworkWizard(WizardLanguage, Rc):
 
 	def __init__(self, session, interface=None):
 		self.xmlfile = resolveFilename(SCOPE_PLUGINS, "SystemPlugins/NetworkWizard/networkwizard.xml")
-		WizardLanguage.__init__(self, session, showSteps=False, showStepSlider=False)
+		Wizard.__init__(self, session, showSteps=False, showStepSlider=False)
 		Rc.__init__(self)
 		self.session = session
 		self["wizard"] = Pixmap()
@@ -172,7 +172,7 @@ class NetworkWizard(WizardLanguage, Rc):
 	def back(self):
 		self.stopScan()
 		self.ap = None
-		WizardLanguage.back(self)
+		Wizard.back(self)
 
 	def stopScan(self):
 		self.rescanTimer.stop()
