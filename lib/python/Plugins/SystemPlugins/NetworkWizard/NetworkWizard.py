@@ -417,7 +417,7 @@ class NetworkWizard(Wizard, Rc):
 								complist.remove(compentry)
 				for entry in complist:
 					self.APList.append((entry[1], entry[1]))
-			if not len(aps):
+			if not aps:
 				self.APList.append((_("No networks found"), None))
 
 		self.rescanTimer.start(4000)
