@@ -20,7 +20,7 @@ displaytype = getDisplayType()
 
 MODULE_NAME = __name__.split(".")[-1]
 
-originalAudioTracks = "orj dos ory org esl qaa qaf und mis mul ORY ORJ Audio_ORJ oth"
+originalAudioTracks = "orj dos ory org esl qaa qaf und qae mis mul ORY ORJ Audio_ORJ oth"
 visuallyImpairedCommentary = "NAR qad"
 
 
