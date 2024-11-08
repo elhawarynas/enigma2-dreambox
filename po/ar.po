@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-02 14:05+0100\n"
-"POT-Creation-Date: 2024-10-19 15:02+0200\n"
+"POT-Creation-Date: 2024-11-08 13:16+0100\n"
 "Last-Translator: RAED - Fairbirb <rrrr53@hotmail.com>\n"
 "Language-Team: \n"
 "Language: ar\n"
@@ -71,6 +71,9 @@ msgstr " (القنوات التلفزيونية)"
 
 msgid " (auto detection)"
 msgstr "أختيار الأفلام"
+
+msgid " (circular LNB)"
+msgstr "استخدام لاقط دائري"
 
 msgid " (disabled)"
 msgstr " (معطل)"
@@ -256,6 +259,16 @@ msgid "%d subdirectory"
 msgid_plural "%d subdirectories"
 msgstr[0] "دليل الجذر"
 msgstr[1] "دليل الجذر"
+
+#, fuzzy, python-format
+msgid "%d week"
+msgid_plural "%d weeks"
+msgstr[0] "اسبوعى"
+msgstr[1] "اسبوعى"
+msgstr[2] "اسبوعى"
+msgstr[3] "اسبوعى"
+msgstr[4] "اسبوعى"
+msgstr[5] "اسبوعى"
 
 #, fuzzy, python-format
 msgid "%d wireless network found!"
@@ -3765,6 +3778,9 @@ msgstr "حركه جيده"
 msgid "Finetune"
 msgstr "الضبط الدقيق"
 
+msgid "Finetune the auto DiSEqC order to in your situation the satellites could be found faster."
+msgstr "قم بضبط ترتيب الدايسك التلقائي بحيث يمكن العثور على الأقمار الصناعية بشكل أسرع في حالتك"
+
 msgid "Finished"
 msgstr "تم الإنتهاء"
 
@@ -4776,6 +4792,9 @@ msgstr "إتصال شبكة عبر الكيبل"
 
 msgid "LNB"
 msgstr "اللاقط"
+
+msgid "LOSTLOCK"
+msgstr "الحد الأقصى المفقود"
 
 msgid "Language"
 msgstr "اللغـة"
@@ -7951,6 +7970,9 @@ msgstr "DVB-T/C أو ATSC قم بتعيين موالفات بديلة لـ"
 
 msgid "Set as startup service"
 msgstr "تعيين قناة بدء التشغيل"
+
+msgid "Set auto DiSEqC search order"
+msgstr "تعيين ترتيب البحث التلقائي الدايسك"
 
 msgid "Set blocktimes by weekday"
 msgstr "تعيين أوقات الحظر خلال أيام الأسبوع"
@@ -11353,9 +11375,6 @@ msgstr "يوميا"
 msgid "day"
 msgstr "يوم"
 
-msgid "days"
-msgstr ""
-
 msgid "default"
 msgstr "الإفتراضي"
 
@@ -11668,12 +11687,6 @@ msgstr "%d دقيقة"
 
 msgid "mins"
 msgstr "دقائق"
-
-msgid "minute"
-msgstr "%d دقائق"
-
-msgid "minutes"
-msgstr "%d دقائق"
 
 msgid "module disabled"
 msgstr "تم التعطيل"
@@ -12148,13 +12161,7 @@ msgstr "فى الانتظار"
 msgid "water sport"
 msgstr "الرياضة المائية"
 
-msgid "week"
-msgstr "اسبوعى"
-
 msgid "weekly"
-msgstr "اسبوعى"
-
-msgid "weeks"
 msgstr "اسبوعى"
 
 msgid "west"
