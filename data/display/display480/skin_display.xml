@@ -19,16 +19,10 @@
 		<font filename="nmsbd.ttf" name="FdLcD" scale="100"/>
 	</fonts>
 
+	<!-- Edited by Makumbo 2024-11-15 - Colors: Green #04B404 / Light Blue #87CEFA / Light Grey #BDBDBD / Dark Grey #888888 -->
+
 	<!-- NEU: "TheTunerPanel" - wird von "InfoBarSummary", "ChannelSelectionSummary" und "EPGSelectionSummary" aufgerufen -->
 	<screen name="TheTunerPanel" position="0,0" size="480,320">
-
-<!-- ###########
-#####		<eLabel text="TUNER:" position="20,260" size="160,60" halign="center" valign="center" font="FdLcD;40" />
-#####		<widget source="session.FrontendInfo" render="FixedLabel" position="180,260" size="60,60" text="A" foregroundColor="#04B404" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		"TUNER:" linksbuendig zm Fortschrittsbalken. Tunerbuchstabe naeher am Doppelpunkt, dadurch kann das Aufnahme "R" dann genau in die Screenmitte.
-############ -->
-
 		<eLabel text="TUNER:" position="20,251" size="160,60" halign="left" valign="center" font="FdLcD;40" />
 		<widget source="session.FrontendInfo" render="FixedLabel" position="180,251" size="60,60" text="A" foregroundColor="#04B404" font="FdLcD;40" halign="left" valign="center">
 			<convert type="FrontendInfo">NUMBER</convert>
@@ -95,17 +89,10 @@
 	</screen>
 
 <!-- template -->
+	<!-- Current time at bottom right -->
 	<screen name="SummaryClockPanel">
-
-<!-- ###########
-#####		<widget source="global.CurrentTime" render="Label" position="320,260" size="160,60" font="FdLcD;40" halign="center" valign="center" noWrap="1">
-#####
-#####		Uhrzeit rechtsbuendig mit dem Fortschrittsbalken, 20 Pixel vom Rand
-#####		Im Gegensatz zum Picon Skin, wo die Uhrzeit riesig unten in der Mitte steht
-############ -->
-
 		<widget source="global.CurrentTime" render="Label" position="320,258" size="140,46" font="FdLcD;40" halign="right" >
-			<convert type="ClockToText" />
+			<convert type="ClockToText"/>
 		</widget>
 	</screen>
 
@@ -125,63 +112,50 @@
 		<widget source="SetupValue" render="Label" position="0,200" size="480,70" font="FdLcD;40" horizontalAlignment="center" verticalAlignment="center" />
 	</screen>
 
+	<!-- InfoBar - Box is turned on -->
 	<screen name="InfoBarSummary" position="0,0" size="480,320">
+
+		<!-- Service name - blue -->
 		<widget source="session.CurrentService" render="Label" position="0,8" size="480,63" font="FdLcD;55" halign="center" foregroundColor="#87CEFA">
 			<convert type="ServiceName">Name</convert>
 		</widget>
+
+		<!-- Event name - Up to 2 lines centered -->
 		<widget source="session.Event_Now" render="Label" position="0,70" size="480,95" font="FdLcD;40" halign="center" valign="center">
 			<convert type="EventName">Name</convert>
 		</widget>
-		<widget source="session.Event_Now" render="Progress" position="20,175" size="440,20" borderWidth="1">
+
+		<!-- Progress bar - grey -->
+		<widget source="session.Event_Now" render="Progress" position="20,175" size="440,20" foregroundColor="#888888" borderColor="#BDBDBD" borderWidth="1">
 			<convert type="EventTime">Progress</convert>
 		</widget>
 
-<!-- ###########
-#####		<widget source="session.Event_Now" render="Label" position="20,210" size="130,40" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		Abstand Sendername zur 2-zeiligen Sendungsbeschreibung 21 Pixel
-#####		Abstand unten der 2-zeiligen Sendungsbeschreibung zum Fortschrittsbalken 21
-#####		Abstand Start- Endzeit und Restminuten 21 zum Fortschrittsbalken
-#####		Abstand "TUNER:" und altuelle Uhrzeit 21 zu Start- Endzeit und Restminuten
-#####		Startzeit linksbuendig mit dem Fortschrittsbalken
-#####		Restminuten und aktuelle Uhrzeit rechsbuendig mit Fortschrittsbalken
-############ -->
-
+		<!-- Event starttime -->
 		<widget source="session.Event_Now" render="Label" position="20,208" size="110,40" font="FdLcD;40" halign="left">
 			<convert type="EventTime">StartTime</convert>
 			<convert type="ClockToText">Format:%H:%M</convert>
 		</widget>
 
-<!-- ###########
-#####		<widget source="session.Event_Now" render="Label" position="150,210" size="130,40" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		Das "-" bei der Endzeit mittig zwischen Startzeit und Endzeit und gleicher Abstand nach oben zum Fortschrittsbalken und nach unten zum "TUNER:" Text
-############ -->
-
+		<!-- Event endtime -->
 		<widget source="session.Event_Now" render="Label" position="134,208" size="130,40" font="FdLcD;40" halign="left">
 			<convert type="EventTime">EndTime</convert>
 			<convert type="ClockToText">Format:- %H:%M</convert>
 		</widget>
 
-<!-- ###########
-#####		<widget source="session.Event_Now" render="Label" position="350,210" size="100,40" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		Restminuten mit "Min" rechtsbuendig mit dem Fortschrittsbalken und in gleicher Hoehe wie die Start/Endzeit
-############ -->
-
+		<!-- Event remaining time -->
 		<widget source="session.Event_Now" render="Label" position="280,208" size="180,40" font="FdLcD;40" halign="right">
 			<convert type="EventTime">Remaining</convert>
 			<convert type="RemainingToText"></convert>
 		</widget>
 
-		<!-- "TUNER:" und den Tunerbuchstaben unten links -->
-		<panel name="TheTunerPanel" />
+		<!-- Get "TUNER:" and tuner letter -->
+		<panel name="TheTunerPanel"/>
 
-		<!-- Blinkendes oder stehendes "R" unten in der Mitte -->
-		<panel name="TheRecordingPanel" />
+		<!-- Get blinking (or permanently displayed) "R" centered on progressbar at recordings -->
+		<panel name="TheRecordingPanel"/>
 
-		<!-- Aktuelle Uhrzeit unten rechts -->
-		<panel name="SummaryClockPanel" />
+		<!-- Get current time at bottom right  -->
+		<panel name="SummaryClockPanel"/>
 	</screen>
 
 <!-- channelselection-->
@@ -192,51 +166,30 @@
 		<widget source="parent.ServiceEvent" render="Label" position="0,70" size="480,95" font="FdLcD;40" halign="center" valign="center">
 			<convert type="EventName">Name</convert>
 		</widget>
-		<widget source="parent.ServiceEvent" render="Progress" position="20,175" size="440,20" borderWidth="1">
+		<widget source="parent.ServiceEvent" render="Progress" position="20,175" size="440,20" foregroundColor="#888888" borderColor="#BDBDBD" borderWidth="1">
 			<convert type="EventTime">Progress</convert>
 		</widget>
-
-<!-- ###########
-#####		<widget source="parent.ServiceEvent" render="Label" position="20,210" size="130,40" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		Startzeit linksbuendig mit dem Fortschrittsbalken und gleicher Abstand nach oben zum Fortschrittsbalken und nach unten zum "TUNER:" Text
-############ -->
-
 		<widget source="parent.ServiceEvent" render="Label" position="20,208" size="110,40" font="FdLcD;40" halign="left">
 			<convert type="EventTime">StartTime</convert>
 			<convert type="ClockToText">Format:%H:%M</convert>
 		</widget>
-
-<!-- ###########
-#####		<widget source="parent.ServiceEvent" render="Label" position="150,210" size="130,40" font="FdLcD;40" halign="center" valign="center">
-#####
-#####		Das "-" der Endzeit mittig zwischen Startzeit und Endzeit und gleicher Abstand nach oben zum Fortschrittsbalken und nach unten zum "TUNER:" Text
-############ -->
-
 		<widget source="parent.ServiceEvent" render="Label" position="134,208" size="130,40" font="FdLcD;40" halign="left">
 			<convert type="EventTime">EndTime</convert>
 			<convert type="ClockToText">Format:- %H:%M</convert>
 		</widget>
-
-<!-- ###########
-#####		<widget source="parent.ServiceEvent" render="Label" position="350,210" size="100,40" font="FdLcD;40" halign="right" valign="center">
-#####
-#####		Restminuten mit "Min" rechtsbuendig mit dem Fortschrittsbalken und in gleicher Hoehe wie die Start/Endzeit
-############ -->
-
 		<widget source="parent.ServiceEvent" render="Label" position="280,208" size="180,40" font="FdLcD;40" halign="right">
 			<convert type="EventTime">Remaining</convert>
 			<convert type="RemainingToText"></convert>
 		</widget>
 
-		<!-- "TUNER:" und den Tunerbuchstaben unten links -->
-		<panel name="TheTunerPanel" />
+		<!-- Get "TUNER:" and tuner letter -->
+		<panel name="TheTunerPanel"/>
 
-		<!-- Blinkendes oder stehendes "R" unten in der Mitte -->
-		<panel name="TheRecordingPanel" />
+		<!-- Get blinking (or permanently displayed) "R" centered on progressbar at recordings -->
+		<panel name="TheRecordingPanel"/>
 
-		<!-- Aktuelle Uhrzeit unten rechts -->
-		<panel name="SummaryClockPanel" />
+		<!-- Get current time at bottom right  -->
+		<panel name="SummaryClockPanel"/>
 	</screen>
 
 <!-- EPG Screens -->
