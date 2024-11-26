@@ -1,10 +1,6 @@
 installdir = $(pkgdatadir)/extensions
 
 dist_install_DATA = \
-	directory.png \
-	movie.png \
-	music.png \
-	picture.png \
 	7z.png \
 	cfg.png \
 	directory.png \
@@ -18,6 +14,7 @@ dist_install_DATA = \
 	lock_off.png \
 	lock_on.png \
 	log.png \
+	lst.png
 	movie.png \
 	music.png \
 	picture.png \
