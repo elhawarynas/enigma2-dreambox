@@ -92,7 +92,7 @@ class PiconLocator:
 		if not pngname: # picon by channel name
 			if (sname := ServiceReference(serviceName).getServiceName()) and "SID 0x" not in sname and (utf8_name := sanitizeFilename(sname).lower()) and utf8_name != "__":  # avoid lookups on zero length service names
 				legacy_name = re.sub("[^a-z0-9]", "", utf8_name.replace("&", "and").replace("+", "plus").replace("*", "star"))  # legacy ascii service name picons
-				pngname = findPicon(utf8_name) or legacy_name and findPicon(legacy_name) or findPicon(re.sub(r"(fhd|uhd|hd|sd|4k)$", "", utf8_name).strip()) or legacy_name and findPicon(re.sub(r"(fhd|uhd|hd|sd|4k)$", "", legacy_name).strip())
+				pngname = self.findPicon(utf8_name) or legacy_name and self.findPicon(legacy_name) or self.findPicon(re.sub(r"(fhd|uhd|hd|sd|4k)$", "", utf8_name).strip()) or legacy_name and self.findPicon(re.sub(r"(fhd|uhd|hd|sd|4k)$", "", legacy_name).strip())
 				if not pngname and len(legacy_name) > 6:
 					series = re.sub(r"s[0-9]*e[0-9]*$", "", legacy_name)
 					pngname = self.findPicon(series)
