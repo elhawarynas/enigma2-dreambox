@@ -18,7 +18,6 @@ dist_install_DATA = \
 	lock_off.png \
 	lock_on.png \
 	log.png \
-	list.png \
 	movie.png \
 	music.png \
 	picture.png \
