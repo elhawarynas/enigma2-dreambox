@@ -346,9 +346,10 @@ class TryQuitMainloop(MessageBox):
 				if not inStandby:
 					if os.path.exists("/usr/script/standby_enter.sh"):
 						Console().ePopen("/usr/script/standby_enter.sh")
-					if BoxInfo.getItem("HasHDMI-CEC") and config.hdmicec.enabled.value and config.hdmicec.control_tv_standby.value and config.hdmicec.next_boxes_detect.value:
-						import Components.HdmiCec
-						Components.HdmiCec.hdmi_cec.secondBoxActive()
+					if BoxInfo.getItem("HasHDMI-CEC") and config.hdmicec.enabled.value and ((config.hdmicec.control_tv_standby.value and (config.hdmicec.next_boxes_detect.value or config.hdmicec.ethernet_pc_used.value)) or config.hdmicec.handle_deepstandby_events.value != "no"):
+						if config.hdmicec.control_tv_standby.value and config.hdmicec.next_boxes_detect.value:
+							import Components.HdmiCec
+							Components.HdmiCec.hdmi_cec.secondBoxActive()
 						if not hasattr(self, "quitScreen"):
 							self.quitScreen = self.session.instantiateDialog(QuitMainloopScreen)
 							self.quitScreen.show()
