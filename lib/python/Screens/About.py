@@ -79,7 +79,8 @@ class About(Screen):
 
 		edidPath = eAVControl.getInstance().getEDIDPath()
 		if edidPath:
-			AboutText += _("EDID: ") + edidPath + "\n"
+			edidPath = eConsoleAppContainer().execute("/usr/bin/edid-decode")
+			AboutText += _("EDID: ") + str(edidPath) + "\n"
 
 		self["TunerHeader"] = StaticText(_("Detected NIMs:"))
 		AboutText += "\n" + _("Detected NIMs:") + "\n"
