@@ -973,18 +973,19 @@ class OSCamEntitleDetails(Screen, OSCamGlobals):
 		NAMEBIN = check_NAMEBIN()
 		NAMEBIN2 = check_NAMEBIN2()
 		self.skinName = "OSCamEntitleDetails"
-		self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1])
-		entitlelen = len(entitlement)
-		for idx in range(len(entitlement)):
-			if (idx + 1) < entitlelen:
-				self["label%s" % idx] = StaticText(entitlement[idx + 1])
-		self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)))
-		self['ProvIDlist'].selectionEnabled(0)
-		self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)))
-		self['Providerlist'].selectionEnabled(0)
-		self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)))
-		self['Nodelist'].selectionEnabled(0)
-		self["key_exit"] = StaticText(_("Exit"))
+		if entitlement:
+			self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1])
+			entitlelen = len(entitlement)
+			for idx in range(len(entitlement)):
+				if (idx + 1) < entitlelen:
+					self["label%s" % idx] = StaticText(entitlement[idx + 1])
+			self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)))
+			self['ProvIDlist'].selectionEnabled(0)
+			self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)))
+			self['Providerlist'].selectionEnabled(0)
+			self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)))
+			self['Nodelist'].selectionEnabled(0)
+			self["key_exit"] = StaticText(_("Exit"))
 		self["actions"] = HelpableActionMap(self, ["OkCancelActions"], {
 			"ok": (self.close, _("Close the screen")),
 			"cancel": (self.close, _("Close the screen")),
