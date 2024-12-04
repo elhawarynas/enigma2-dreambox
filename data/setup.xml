@@ -127,6 +127,7 @@
 		<item level="0" text="Show transponder remaining/elapsed as" description="This option allows you to choose how to display the remaining/elapsed time for live TV.">config.usage.swap_time_display_on_osd</item>
 		<item level="0" text="Media playback Remaining/Elapsed as" description="This option allows you to choose how to display the remaining/elapsed time for media playback.">config.usage.swap_media_time_display_on_osd</item>
 		<item level="2" text="Hide zap errors" description="When enabled, error messages related to zapping will not be shown.">config.usage.hide_zap_errors</item>
+		<item level="0" text="Show picon background color" description="This option allows you choose the background color of transparent picons.">config.usage.show_picon_bkgrn</item>
 		<item level="2" text="Show crypto info in infobar" conditional="parameters.get('hasInfobarCryptoInfo', True)" description="When enabled, encryption info will be shown in the infobar (when supported by the skin).">config.usage.show_cryptoinfo</item>
 		<item level="2" text="Hide softcam servername" description="Select 'Yes' to hide the server name and IP address of the server.">config.misc.softcam_hideServerName</item>
 		<item level="2" text="Infobar frontend data source" description="Configure the source of the frontend data as shown on the infobars. 'Settings' is as stored on the settings. 'Tuner' is as reported by the tuner.">config.usage.infobar_frontend_source</item>
