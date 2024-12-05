@@ -2,6 +2,8 @@
 from enigma import eServiceReference, eProfileWrite
 from os.path import splitext
 from glob import glob
+import os
+
 # workaround for required config entry dependencies.
 import Screens.MovieSelection
 
@@ -32,6 +34,12 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
 eProfileWrite("LOAD:InfoBar_Class")
 
+INIT_DEC_PROCPATH = "/proc/stb/video/decodermode"
+
+def setDecoderMode(value):
+	if os.access(INIT_DEC_PROCPATH, os.F_OK):
+		open(INIT_DEC_PROCPATH, "w").write(value)
+		return open(INIT_DEC_PROCPATH, "r").read().strip() == value
 
 class InfoBar(InfoBarBase, InfoBarShowHide,
 	InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder, InfoBarResolutionSelection, InfoBarAspectSelection,
@@ -253,6 +261,7 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBa
 			self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list=list)
 		else:
 			self.leavePlayerConfirmed([True, how])
+			setDecoderMode("normal")
 
 	def leavePlayer(self):
 		resumePointsInstance.setResumePoint(self.session)
