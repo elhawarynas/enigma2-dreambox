@@ -34,12 +34,6 @@ from Components.ServiceEventTracker import ServiceEventTracker, InfoBarBase
 
 eProfileWrite("LOAD:InfoBar_Class")
 
-INIT_DEC_PROCPATH = "/proc/stb/video/decodermode"
-
-def setDecoderMode(value):
-	if os.access(INIT_DEC_PROCPATH, os.F_OK):
-		open(INIT_DEC_PROCPATH, "w").write(value)
-		return open(INIT_DEC_PROCPATH, "r").read().strip() == value
 
 class InfoBar(InfoBarBase, InfoBarShowHide,
 	InfoBarNumberZap, InfoBarChannelSelection, InfoBarMenu, InfoBarEPG, InfoBarRdsDecoder, InfoBarResolutionSelection, InfoBarAspectSelection,
@@ -261,7 +255,8 @@ class MoviePlayer(InfoBarBase, InfoBarShowHide, InfoBarMenu, InfoBarSeek, InfoBa
 			self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list=list)
 		else:
 			self.leavePlayerConfirmed([True, how])
-			setDecoderMode("normal")
+			#This does reset the Video Decoder as needed for GigaBlue boxes.
+			config.usage.QuadpipMode.changed()
 
 	def leavePlayer(self):
 		resumePointsInstance.setResumePoint(self.session)
