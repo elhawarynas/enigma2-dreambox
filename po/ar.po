@@ -4,46 +4,59 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-02 14:05+0100\n"
 "POT-Creation-Date: 2024-12-08 15:08+0100\n"
+"PO-Revision-Date: \n"
 "Last-Translator: RAED - Fairbirb <rrrr53@hotmail.com>\n"
 "Language-Team: \n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.0\n"
-"X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"X-Generator: Poedit 3.4.2\n"
+"X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: D:/Decoder/VU+/OBH 4.2/it/LC_MESSAGES/enigma2/OBH/OBH LOCALE\n"
 
-msgid "\n"
+msgid ""
+"\n"
 " Do you want to switch to Android ?"
-msgstr "\n"
+msgstr ""
+"\n"
 "هل تريد الإنتقال إلى نظام الاندرويد ؟"
 
-msgid "\n"
+msgid ""
+"\n"
 "After pressing OK, please wait!"
-msgstr "\n"
+msgstr ""
+"\n"
 "بعد الضغط على موافق ، الرجاء الانتظار!"
 
-msgid "\n"
+msgid ""
+"\n"
 "Press OK on your remote control to continue."
-msgstr "\n"
+msgstr ""
+"\n"
 "أضغط موافق من ريموت التحكم عن بعد للاستمرار."
 
-msgid "\n"
+msgid ""
+"\n"
 "Press OK or Exit to abort!"
-msgstr "\n"
+msgstr ""
+"\n"
 "اضغط موافق للبحث!"
 
-msgid "\n"
+msgid ""
+"\n"
 "Recording in progress."
-msgstr "\n"
+msgstr ""
+"\n"
 "التسجيل قيد التشغيل."
 
 #, python-format
-msgid "\n"
+msgid ""
+"\n"
 "Timer '%s' disabled!"
-msgstr "\n"
+msgstr ""
+"\n"
 "تعطيل '%s' المؤقت!"
 
 msgid " (+5 volt terrestrial)"
@@ -176,24 +189,40 @@ msgid "%d channel found"
 msgid_plural "%d channels found"
 msgstr[0] "%d تم العثر على قناة"
 msgstr[1] "%d تم العثر على قناة"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, python-format
 msgid "%d core"
 msgid_plural "%d cores"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d day"
 msgid_plural "%d days"
 msgstr[0] "%d يوم"
 msgstr[1] "%d أيام"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d file"
 msgid_plural "%d files"
 msgstr[0] "%d ملفات"
 msgstr[1] "%d ملفات"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "%d fps"
 msgstr "ملف %d"
@@ -203,12 +232,20 @@ msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "ساعة %d"
 msgstr[1] "ساعات %d"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d job is running in the background!"
 msgid_plural "%d jobs are running in the background!"
 msgstr[0] "!الوظيفة تعمل فى الخلفية %d"
 msgstr[1] "!الوظائف تعمل فى الخلفية %d"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, python-format
 msgid "%d kB/s"
@@ -223,6 +260,10 @@ msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "دقيقة %d"
 msgstr[1] "دقائق %d"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d minutes"
@@ -237,12 +278,20 @@ msgid "%d package selected."
 msgid_plural "%d packages selected."
 msgstr[0] "الحزم المختارة"
 msgstr[1] "الحزم المختارة"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, python-format
 msgid "%d pixel wide"
 msgid_plural "%d pixels wide"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d sec"
@@ -253,12 +302,20 @@ msgid "%d second"
 msgid_plural "%d seconds"
 msgstr[0] "ثانية %d"
 msgstr[1] "ثواني %d"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d subdirectory"
 msgid_plural "%d subdirectories"
 msgstr[0] "دليل الجذر"
 msgstr[1] "دليل الجذر"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "%d week"
@@ -275,6 +332,10 @@ msgid "%d wireless network found!"
 msgid_plural "%d wireless networks found!"
 msgstr[0] "!وجدت شبكة لاسلكية %d"
 msgstr[1] "!وجدت شبكة لاسلكية %d"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "%d-%m"
 msgstr "%d-%m"
@@ -300,18 +361,22 @@ msgid "%k:%M %e/%m"
 msgstr "%k:%M %e/%m"
 
 #, python-format
-msgid "%s\n"
+msgid ""
+"%s\n"
 "Do you still want to flash image\n"
 "%s?"
-msgstr "%s\n"
+msgstr ""
+"%s\n"
 "هل لا تزال تريد فلاش صورة\n"
 "%s?"
 
 #, python-format
-msgid "%s\n"
+msgid ""
+"%s\n"
 "Press ok for multiboot selection\n"
 "Press exit to close"
-msgstr "%s\n"
+msgstr ""
+"%s\n"
 "\n"
 "اضغط على موافق لاختيار متعدد أنظمة التشغيلاضغط خروج للإغلاق"
 
@@ -362,7 +427,6 @@ msgstr[5] "التحديثات المتوفرة."
 msgid "%s%s(Default: %s)"
 msgstr ""
 
-#, fuzzy
 msgid "(VU+ type)"
 msgstr ""
 
@@ -561,20 +625,24 @@ msgid "A graphical EPG for all services of a specific bouquet"
 msgstr "دليل البرامج الإلكتروني الرسومي لجميع خدمات باقة محددة"
 
 msgid "A highlight on the remote control image shows which button the help refers to. If more than one button performs the indicated function, more than one highlight will be shown. Text below the list indicates whether the function is for a long press of the button(s)."
-msgstr "يُظهر تمييز في صورة جهاز التحكم عن بعد الزر الذي يشير إليه "المساعدة". إذا كان هناك أكثر من زر يؤدي الوظيفة المشار إليها، فسيتم عرض أكثر من تمييز. يشير النص الموجود أسفل القائمة إلى ما إذا كانت الوظيفة تتطلب الضغط لفترة طويلة على الزر (الأزرار)."
+msgstr "يُظهر تمييز في صورة جهاز التحكم عن بعد الزر الذي يشير إليه \"المساعدة\". إذا كان هناك أكثر من زر يؤدي الوظيفة المشار إليها، فسيتم عرض أكثر من تمييز. يشير النص الموجود أسفل القائمة إلى ما إذا كانت الوظيفة تتطلب الضغط لفترة طويلة على الزر (الأزرار).\""
 
 #, python-format
-msgid "A recording has started:\n"
+msgid ""
+"A recording has started:\n"
 "%s"
-msgstr "بدأ التسجيل:\n"
+msgstr ""
+"بدأ التسجيل:\n"
 "%s"
 
 msgid "A recording is currently running on the selected tuner. Please select a different tuner or stop the recording and try again."
 msgstr "يتم حاليا تشغيل التسجيل علي الموالف المحدد. الرجاء تحديد موالف مختلف أو التفكير في إيقاف التسجيل للمحاولة مره أخرى."
 
-msgid "A recording is currently running.\n"
+msgid ""
+"A recording is currently running.\n"
 "What do you want to do?"
-msgstr "التسجيل حاليا قيد التقدم. \n"
+msgstr ""
+"التسجيل حاليا قيد التقدم. \n"
 "ماذا تريد أن تفعل؟"
 
 msgid "A recording is currently running. Please stop the recording before starting a service scan."
@@ -593,10 +661,12 @@ msgstr "لم يتم العثور (%s) على الأداة المطلوبة."
 msgid "A search for available updates is currently in progress."
 msgstr "جار البحث عن التحديثات المتوفرة حاليا."
 
-msgid "A second configured interface has been found.\n"
+msgid ""
+"A second configured interface has been found.\n"
 "\n"
 "Do you want to disable the second network interface?"
-msgstr "تم العثور على واجهه ثانيه جاهزة الاعدادات\n"
+msgstr ""
+"تم العثور على واجهه ثانيه جاهزة الاعدادات\n"
 "\n"
 "هل تريد تعطيل واجهه الشبكة الثانيه ؟"
 
@@ -609,9 +679,11 @@ msgstr "مؤقت السكون على وشك إغلاق جهاز الاستقبا
 msgid "A small overview of the available icon states and actions."
 msgstr "لمحة صغيرة من الأيقونة المتاحة للحالات والإجراءات."
 
-msgid "A timer failed to record!\n"
+msgid ""
+"A timer failed to record!\n"
 "Disable TV and try again?\n"
-msgstr "فشل عمليه التسجيل بالمؤقت\n"
+msgstr ""
+"فشل عمليه التسجيل بالمؤقت\n"
 "قم بتعطيل التليفزيون وحاول مره ثانيه؟\n"
 
 msgid "A/V settings"
@@ -1003,37 +1075,47 @@ msgstr "هل تريد بالتاكيد أزاله هذا الإدخال ؟"
 msgid "Are you sure to restore all deleted images"
 msgstr "هل تريد بالتاكيد أزاله كافة باقات المستخدم المحذوفة ؟"
 
-msgid "Are you sure you want to activate this network configuration?\n"
+msgid ""
+"Are you sure you want to activate this network configuration?\n"
 "\n"
-msgstr "هل أنت متاكد أنك تريد تنشيط تكوينات الشبكة؟\n"
+msgstr ""
+"هل أنت متاكد أنك تريد تنشيط تكوينات الشبكة؟\n"
 "\n"
 
-msgid "Are you sure you want to delete\n"
+msgid ""
+"Are you sure you want to delete\n"
 "the following backup:\n"
-msgstr "هل تريد بالتاكيد حذف\n"
+msgstr ""
+"هل تريد بالتاكيد حذف\n"
 "النسخة الاحتياطية التالية:\n"
 
 msgid "Are you sure you want to exit this wizard?"
 msgstr "هل أنت متأكد أنك تريد الخروج من هذه النافذه ؟"
 
-msgid "Are you sure you want to restart your network interfaces?\n"
+msgid ""
+"Are you sure you want to restart your network interfaces?\n"
 "\n"
-msgstr "هل أنت متأكد أنك تريد إعادة تشغيل شبكة الانترنت ؟\n"
+msgstr ""
+"هل أنت متأكد أنك تريد إعادة تشغيل شبكة الانترنت ؟\n"
 "\n"
 
 #, python-format
-msgid "Are you sure you want to restore\n"
+msgid ""
+"Are you sure you want to restore\n"
 "the following backup:\n"
 "%s\n"
 "Your receiver will restart after the backup has been restored!"
-msgstr "هل أنت متأكد من أنك تريد الاستعادة\n"
+msgstr ""
+"هل أنت متأكد من أنك تريد الاستعادة\n"
 "النسخ الاحتياطي التالي:\n"
 "%s\n"
 "سيتم إعادة تشغيل جهاز الاستقبال بعد استعادة النسخة الاحتياطية!"
 
-msgid "Are you sure you want to restore the backup?\n"
+msgid ""
+"Are you sure you want to restore the backup?\n"
 "Your receiver will restart after the backup has been restored!"
-msgstr "هل تريد بالتاكيد استعاده النسخة الاحتياطية ؟\n"
+msgstr ""
+"هل تريد بالتاكيد استعاده النسخة الاحتياطية ؟\n"
 "سيتم أعاده تشغيل جهاز الاستقبال الخاص بك بعد استعاده النسخة الاحتياطية!"
 
 msgid "Argentina"
@@ -1079,9 +1161,11 @@ msgstr ""
 msgid "Attention, this is repeated timer!\n"
 msgstr "انتباه ، هذا مؤقت متكرر!\n"
 
-msgid "Attention, this is repeated timer!\n"
+msgid ""
+"Attention, this is repeated timer!\n"
 "What do you want to do?"
-msgstr "انتباه، وهذا هو توقيت المتكررة!\n"
+msgstr ""
+"انتباه، وهذا هو توقيت المتكررة!\n"
 "ماذا تريد أن تفعل؟"
 
 msgid "Audio"
@@ -1312,7 +1396,7 @@ msgid "Basque"
 msgstr "الباسكي"
 
 msgid "Before sending the command to switch the TV to standby, the receiver tests if PC connected to TV is in standby. If it is not, the 'sourceinactive' command will be sent to the TV instead of the 'standby' command."
-msgstr "قبل إرسال الأمر لتحويل التلفزيون إلى وضع الاستعداد، يقوم جهاز الاستقبال باختبار ما إذا كان الكمبيوتر المتصل بالتلفزيون في وضع الاستعداد. إذا لم يكن كذلك، فسيتم إرسال الأمر "المصدر غير نشط" إلى التلفزيون بدلاً من الأمر "تعليق"."
+msgstr "قبل إرسال الأمر لتحويل التلفزيون إلى وضع الاستعداد، يقوم جهاز الاستقبال باختبار ما إذا كان الكمبيوتر المتصل بالتلفزيون في وضع الاستعداد. إذا لم يكن كذلك، فسيتم إرسال الأمر \"المصدر غير نشط\" إلى التلفزيون بدلاً من الأمر 'تعليق'.\""
 
 msgid "Before sending the command to switch the TV to standby, the receiver tests if all the other devices plugged to TV are in standby. If they are not, the 'sourceinactive' command will be sent to the TV instead of the 'standby' command."
 msgstr "قبل إرسال الأمر بتبديل التلفزيون إلى وضع الاستعداد ، يختبر جهاز الاستقبال ما إذا كانت جميع الأجهزة الأخرى المتصلة بالتلفزيون في وضع الاستعداد. إذا لم يكن الأمر كذلك ، فسيتم إرسال الأمر 'صدر غير نشط' إلى التلفزيون بدلاً من أمر 'الاستعداد'"
@@ -1552,7 +1636,8 @@ msgstr "الكاميرون"
 msgid "Can be used for different fps between external subtitles and video."
 msgstr "يمكن استخدامها لمختلف معدل الإطارات في الثانية بين الترجمة الخارجية والفيديو."
 
-msgid "Can be used to test defect pixels on TV screen.\n"
+msgid ""
+"Can be used to test defect pixels on TV screen.\n"
 "\n"
 "Available color test screens:\n"
 "\n"
@@ -1567,7 +1652,8 @@ msgid "Can be used to test defect pixels on TV screen.\n"
 "\n"
 "Screens change with left/right buttons or use red, green, blue to toggle.\n"
 "Yellow for returning back to this intro"
-msgstr "يمكن استخدامها لاختبار عيوب البكسل على شاشة التلفزيون.\n"
+msgstr ""
+"يمكن استخدامها لاختبار عيوب البكسل على شاشة التلفزيون.\n"
 "\n"
 "شاشات اختبار الألوان المتوفرة:\n"
 "\n"
@@ -1765,9 +1851,11 @@ msgid "Checking the internet connection"
 msgstr "التحقق من إتصال الإنترنت"
 
 #, python-format
-msgid "Checking tuner %s\n"
+msgid ""
+"Checking tuner %s\n"
 "DiSEqC port %s for %s"
-msgstr "التحقق من المؤالف %s\n"
+msgstr ""
+"التحقق من المؤالف %s\n"
 "منفذ الدايزك %s إلى %s"
 
 msgid "Children/Youth/Education/Science"
@@ -2434,9 +2522,11 @@ msgstr " :الجهاز الحالي"
 msgid "Current event EPG"
 msgstr " :الحدث الحالي"
 
-msgid "Current event is over.\n"
+msgid ""
+"Current event is over.\n"
 "Select an option to save the timeshift file."
-msgstr "انتهى الحدث الحالي.\n"
+msgstr ""
+"انتهى الحدث الحالي.\n"
 "حدد خيارًا لحفظ ملف التحول الزمني."
 
 #, python-format
@@ -2941,9 +3031,11 @@ msgstr ".لا تعرض امتدادات الملفات لملفات الوسائ
 msgid "Do nothing"
 msgstr "لا شئ"
 
-msgid "Do you really want to check the filesystem?\n"
+msgid ""
+"Do you really want to check the filesystem?\n"
 "This could take lots of time!"
-msgstr "هل تريد حقا التحقق من نظام الملفات ؟\n"
+msgstr ""
+"هل تريد حقا التحقق من نظام الملفات ؟\n"
 "هذا قد يستغرق وقتا طويلا!"
 
 #, python-format
@@ -2951,23 +3043,29 @@ msgid "Do you really want to delete %s?"
 msgstr "هل تريد حقًا حذف%s؟"
 
 #, python-format
-msgid "Do you really want to download\n"
+msgid ""
+"Do you really want to download\n"
 "the plugin \"%s\"?"
-msgstr "هل تريد حقاُ تحميل\n"
+msgstr ""
+"هل تريد حقاُ تحميل\n"
 "الإضافة \"%s\"?"
 
 msgid "Do you really want to exit?"
 msgstr "هل تريد فعلا الخروج ؟"
 
-msgid "Do you really want to initialize the device?\n"
+msgid ""
+"Do you really want to initialize the device?\n"
 "All data on the disk will be lost!"
-msgstr "هل تريد حقا ان تقوم بتهيئة هذا الجهاز ؟\n"
+msgstr ""
+"هل تريد حقا ان تقوم بتهيئة هذا الجهاز ؟\n"
 "سيتم فقدان جميع البيانات علي الجهاز!"
 
 #, python-format
-msgid "Do you really want to remove\n"
+msgid ""
+"Do you really want to remove\n"
 "the plugin \"%s\"?"
-msgstr "هل تريد حقاُ حذف\n"
+msgstr ""
+"هل تريد حقاُ حذف\n"
 "الإضافة \"%s\"?"
 
 #, python-format
@@ -2990,13 +3088,16 @@ msgstr "هل تريد إستعادة الاعدادات ؟"
 msgid "Do you want to burn this collection to DVD medium?"
 msgstr "هل تريد حرق هذه المجموعة فى وسيط الدفيفدي ؟"
 
-msgid "Do you want to flash image\n"
+msgid ""
+"Do you want to flash image\n"
 "%s"
-msgstr "هل تريد فعلا تثبيت الصورة:\n"
+msgstr ""
+"هل تريد فعلا تثبيت الصورة:\n"
 "%s"
 
 msgid "Do you want to install Plugins?"
-msgstr "هل تريد تثبيت الإضافة:\n"
+msgstr ""
+"هل تريد تثبيت الإضافة:\n"
 " "
 
 msgid "Do you want to install a channel list?"
@@ -3076,12 +3177,17 @@ msgid "Done - Installed, updated or removed %d package (%s)"
 msgid_plural "Done - Installed, updated or removed %d packages (%s)"
 msgstr[0] "أخطاء %d الحزم مع %d منتهي - مثبتة أو محدثة أو مُزالة"
 msgstr[1] "أخطاء %d الحزم مع %d منتهي - مثبتة أو محدثة أو مُزالة"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, python-format
 msgid ""
 "Download Successful\n"
 "%s"
-msgstr "تم التنزيل بنجاح\n"
+msgstr ""
+"تم التنزيل بنجاح\n"
 "%s"
 
 msgid "Download plugins"
@@ -3373,13 +3479,15 @@ msgstr "الإنجليزية"
 
 #, python-format
 msgid "Enigma (re)starts: %d\n"
-msgstr "تشغيل وإعادة تشغيل الانجما2: %d\n"
+msgstr ""
+"تشغيل وإعادة تشغيل الانجما2: %d\n"
 "\n"
 "\n"
 
 #, python-format
 msgid "Enigma debug level: %d\n"
-msgstr "تشغيل وإعادة تشغيل الانجما2: %d\n"
+msgstr ""
+"تشغيل وإعادة تشغيل الانجما2: %d\n"
 "\n"
 "\n"
 
@@ -3462,23 +3570,29 @@ msgid "Error code"
 msgstr "رمز الخطا"
 
 #, python-format
-msgid "Error during backup settings\n"
+msgid ""
+"Error during backup settings\n"
 "%s"
-msgstr "إعدادات التسجيل وتشغيل الوسائط\n"
-"%s"
-
-#, python-format
-msgid "Error during downloading image\n"
-"%s\n"
-"%s"
-msgstr "خطأ خلال تحميل الصورة\n"
-"%s\n"
+msgstr ""
+"إعدادات التسجيل وتشغيل الوسائط\n"
 "%s"
 
 #, python-format
-msgid "Error during unzipping image\n"
+msgid ""
+"Error during downloading image\n"
+"%s\n"
 "%s"
-msgstr "خطأ خلال تفكيك الصورة\n"
+msgstr ""
+"خطأ خلال تحميل الصورة\n"
+"%s\n"
+"%s"
+
+#, python-format
+msgid ""
+"Error during unzipping image\n"
+"%s"
+msgstr ""
+"خطأ خلال تفكيك الصورة\n"
 "%s"
 
 msgid "Error stop stream!"
@@ -3504,19 +3618,20 @@ msgid "Error while retreiving epg.dat from the fallback receiver"
 msgstr "خطأ أثناء استرداد بيانات الدليل الإلكتروني من جهاز الاستقبال الاحتياطي"
 
 #, python-format
-#, fuzzy
-msgid "Error while retrieving location of epg.dat on the fallback receiver"
-"%s"
-msgstr "حدث خطأ أثناء استرداد موقع الدليل الإلكتروني على جهاز الاستقبال الاحتياطي\n"
+msgid "Error while retrieving location of epg.dat on the fallback receiver%s"
+msgstr ""
+"حدث خطأ أثناء استرداد موقع الدليل الإلكتروني على جهاز الاستقبال الاحتياطي\n"
 "%s"
 
 msgid "Error while retreiving location of epg.dat on server"
 msgstr "خطأ أثناء استرداد موقع بيانات الدليل الإلكتروني على الخادم"
 
 #, python-format
-msgid "Error: %s\n"
+msgid ""
+"Error: %s\n"
 "Retry?"
-msgstr "خطأ: %s\n"
+msgstr ""
+"خطأ: %s\n"
 "إعادة المحاوله ؟"
 
 msgid "Estonia"
@@ -3704,20 +3819,26 @@ msgstr "جودة إشارة لاقط أف بي سي (بدون كيبل / جيس�
 msgid "FBC automatic"
 msgstr "تيونر أف بي سي تلقائي"
 
-msgid "FBC automatic\n"
+msgid ""
+"FBC automatic\n"
 "connected to"
-msgstr "لاقط أف بي سي التلقائي\n"
+msgstr ""
+"لاقط أف بي سي التلقائي\n"
 "متصل إلى"
 
 #, python-format
-msgid "FBC automatic\n"
+msgid ""
+"FBC automatic\n"
 "connected to %s"
-msgstr "لاقط أف بي سي التلقائي\n"
+msgstr ""
+"لاقط أف بي سي التلقائي\n"
 "متصل إلى %s"
 
-msgid "FBC automatic\n"
+msgid ""
+"FBC automatic\n"
 "inactive"
-msgstr "لاقط أف بي سي التلقائي\n"
+msgstr ""
+"لاقط أف بي سي التلقائي\n"
 "غير نشط"
 
 #, python-format
@@ -3748,10 +3869,14 @@ msgstr "إعادة ضبط المنصع"
 msgid "Factory Reset"
 msgstr "إعادة ضبط المنصع"
 
-msgid "Factory reset will restore your receiver to its default configuration. All user data including system settings, tuner configuration, bouquets, services and plugins will be DELETED. Recordings and other files stored on HDD and USB media will remain intact. After completion, the system will restart automatically!\n"
+msgid ""
+"Factory reset will restore your receiver to its default configuration. All user data including system settings, tuner configuration, bouquets, services and plugins will be DELETED. Recordings and other files stored on HDD and USB media will remain intact. After completion, the system "
+"will restart automatically!\n"
 "\n"
 "Do you really want to proceed?"
-msgstr "ستؤدي إعادة ضبط المصنع إلى إعادة جهاز الاستقبال إلى تكوينه الافتراضي. سيتم حذف جميع بيانات المستخدم بما في ذلك إعدادات النظام وتكوين الموالف والباقات والخدمات والمكونات الإضافية. ستظل التسجيلات والملفات الأخرى المخزنة على محرك الأقراص الثابتة وفلاشة الذاكرة  كما هي. بعد الانتهاء ، سيُعاد تشغيل النظام تلقائيًا!\n"
+msgstr ""
+"ستؤدي إعادة ضبط المصنع إلى إعادة جهاز الاستقبال إلى تكوينه الافتراضي. سيتم حذف جميع بيانات المستخدم بما في ذلك إعدادات النظام وتكوين الموالف والباقات والخدمات والمكونات الإضافية. ستظل التسجيلات والملفات الأخرى المخزنة على محرك الأقراص الثابتة وفلاشة الذاكرة  كما هي. بعد الانتهاء ، "
+"سيُعاد تشغيل النظام تلقائيًا!\n"
 "\n"
 "هل تريد حقًا المتابعة؟"
 
@@ -3909,9 +4034,11 @@ msgid "Flashing image successful"
 msgstr "تمرير الصورة تم بنجاح"
 
 #, python-format
-msgid "Flashing image was not successful\n"
+msgid ""
+"Flashing image was not successful\n"
 "%s"
-msgstr "تمرير الصورة لم تكن ناجحة\n"
+msgstr ""
+"تمرير الصورة لم تكن ناجحة\n"
 "%s"
 
 #, fuzzy
@@ -4047,9 +4174,11 @@ msgid "GUI Skin"
 msgstr "الجلد"
 
 #, fuzzy
-msgid "GUI needs a restart to apply a new language\n"
+msgid ""
+"GUI needs a restart to apply a new language\n"
 "Do you want to restart the GUI now?"
-msgstr "يجب إعادة تشغيل الاينجما2 لتطبيق السكن \n"
+msgstr ""
+"يجب إعادة تشغيل الاينجما2 لتطبيق السكن \n"
 "هل تريد إعادة تشغيل الاينجما2 الان ؟"
 
 msgid "Gabon"
@@ -4513,16 +4642,20 @@ msgstr ".ملتزمًا ، فأدخل حرف المنفذ المطلوب للو�
 msgid "If you are using a DiSEqC uncommitted switch enter the port number required to access the LNB used for this satellite."
 msgstr ".المستخدم لهذا القمر الصناعي LNB غير ملتزم ، أدخل رقم المنفذ المطلوب للوصول إلى DiSEqC إذا كنت تستخدم مفتاح"
 
-msgid "If you see this, something is wrong with\n"
+msgid ""
+"If you see this, something is wrong with\n"
 "your scart connection. Press OK to return."
-msgstr "إذا كنت تستطيع رؤية هذا، هناك خطأ \n"
+msgstr ""
+"إذا كنت تستطيع رؤية هذا، هناك خطأ \n"
 "ما مع وصلة سكارت الخاص بك. اضغط موافق للعودة."
 
-msgid "If your TV has a brightness or contrast enhancement, disable it. If there is something called \"dynamic\", set it to standard. Adjust the backlight level to a value suiting your taste. Turn down contrast on your TV as much as possible.\n"
+msgid ""
+"If your TV has a brightness or contrast enhancement, disable it. If there is something called \"dynamic\", set it to standard. Adjust the backlight level to a value suiting your taste. Turn down contrast on your TV as much as possible.\n"
 "Then turn the brightness setting as low as possible, but make sure that the two lowermost shades of gray stay distinguishable.\n"
 "Do not care about the bright shades now. They will be set up in the next step.\n"
 "If you are happy with the result, press OK."
-msgstr "\"إذا كان التليفزيون به خاصية الاضاءه أو تعزيز التباين ، قم بتعطيلها . إذا كان هناك شيئ أسمه \"ديناميكى\" قم بضبطه الى الوضع القياسى . أضبط الاضاءه الخلفيه الى قيمه تناسب ذوقك . أخفض التباين فى التليفزيون الى أقل مستوى ممكن \n"
+msgstr ""
+"\"إذا كان التليفزيون به خاصية الاضاءه أو تعزيز التباين ، قم بتعطيلها . إذا كان هناك شيئ أسمه \"ديناميكى\" قم بضبطه الى الوضع القياسى . أضبط الاضاءه الخلفيه الى قيمه تناسب ذوقك . أخفض التباين فى التليفزيون الى أقل مستوى ممكن \n"
 "بعد ذلك أخفض مستوى الاضاء الى أقل مستوى ممكن ، لكن ـاكد من وجود ظللين رماديين يمكن بقائهما فى حالة تمييز \n"
 "لا تهتم بظلال الاضاءه الان . سيتم عمل الاعادادت لها فى الخطوه القادمه \n"
 "إذا كنت تتقبل النتيجه ، أضغط موافق\"."
@@ -4543,9 +4676,11 @@ msgid "Image View On"
 msgstr "مدير الصور"
 
 #, python-format
-msgid "Image to install is invalid\n"
+msgid ""
+"Image to install is invalid\n"
 "%s"
-msgstr "صورة التثبيت غير صالحه\n"
+msgstr ""
+"صورة التثبيت غير صالحه\n"
 "%s"
 
 msgid "Image: "
@@ -4574,7 +4709,8 @@ msgid "In Setup screens choose whether to show the default value of the selected
 msgstr "في شاشات الإعداد، اختر ما إذا كنت تريد إظهار القيمة الافتراضية للعنصر المحدد في حقل الوصف أم لا."
 
 msgid "In order to record a timer, the TV was switched to the recording service!\n"
-msgstr "لكى تسجل مؤقت ، يجب تحويل التليفزيون الى القناة التى ستسجل منها!\n"
+msgstr ""
+"لكى تسجل مؤقت ، يجب تحويل التليفزيون الى القناة التى ستسجل منها!\n"
 "\n"
 
 msgid "In progress"
@@ -4796,11 +4932,13 @@ msgstr "جزيرة الرجل"
 msgid "Israel"
 msgstr ""
 
-msgid "It seems you did not see all the eight arrow heads. This means your TV has overscan enabled, and is not configured properly.\n"
+msgid ""
+"It seems you did not see all the eight arrow heads. This means your TV has overscan enabled, and is not configured properly.\n"
 "\n"
 "Please refer to your TV's manual to find how you can disable overscan on your TV. Look for terms like 'Just fit', 'Full width', etc. If you can't find it, ask other users at http://forums.openpli.org.\n"
 "\n"
-msgstr "يبدو أنك لم تر كل رؤوس الأسهم الثمانية. هذا يعني أن جهاز التلفزيون لديك ممكّنًا للمسح الزائد ، ولم يتم تكوينه بشكل صحيح.\n"
+msgstr ""
+"يبدو أنك لم تر كل رؤوس الأسهم الثمانية. هذا يعني أن جهاز التلفزيون لديك ممكّنًا للمسح الزائد ، ولم يتم تكوينه بشكل صحيح.\n"
 "\n"
 "يرجى الرجوع إلى دليل التلفزيون الخاص بك لمعرفة كيفية تعطيل المسح الزائد على التلفزيون.  ابحث عن مصطلحات مثل 'مناسب فقط', 'العرض الكامل', 'وما إلى ذلك'.  إذا لم تتمكن من العثور عليها ، فاسأل مستخدمين آخرين على http://forums.openpli.org\n"
 
@@ -5067,6 +5205,10 @@ msgid "List version %(ver)d, found %(num)d channel"
 msgid_plural "List version %(ver)d, found %(num)d channels"
 msgstr[0] "قناة %(num)d وجدت ,%(ver)d نسخة القائمة"
 msgstr[1] "قنوات %(num)d وجدت ,%(ver)d نسخة القائمة"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "Listen to the radio..."
 msgstr "الاستماع إلى القنوات الإذاعية..."
@@ -5255,9 +5397,11 @@ msgstr "الاستيراد يدويًا من الموالف الاحتياطي"
 msgid "Manufacturer"
 msgstr "الشركة المصنعة"
 
-msgid "Manufacturer reset in progress\n"
+msgid ""
+"Manufacturer reset in progress\n"
 "Please wait until enigma2 restarts"
-msgstr "إعادة تعيين الشركة المصنعة قيد التقدم \n"
+msgstr ""
+"إعادة تعيين الشركة المصنعة قيد التقدم \n"
 "يرجى الانتظار حتى إعادة تشغيل الأنجيما"
 
 msgid "Margin after recording (minutes)"
@@ -5732,9 +5876,11 @@ msgstr "لا يوجد حجب للعمر"
 msgid "No config items available"
 msgstr "لا توجد عناصر التكوين المتاحة"
 
-msgid "No data on transponder!\n"
+msgid ""
+"No data on transponder!\n"
 "(Timeout reading PAT)"
-msgstr "لا توجد بيانات عن المستجيب! \n"
+msgstr ""
+"لا توجد بيانات عن المستجيب! \n"
 " (الوقت المستقطع لقراءة جدول البرامج المرتبطه)"
 
 msgid "No data received yet"
@@ -5810,9 +5956,11 @@ msgstr "لا للجميع"
 msgid "No transparency"
 msgstr "~بدون شفافية"
 
-msgid "No tuner is enabled!\n"
+msgid ""
+"No tuner is enabled!\n"
 "Please setup your tuner settings before you start a service scan."
-msgstr "لا يوجد مؤالف مفعل!\n"
+msgstr ""
+"لا يوجد مؤالف مفعل!\n"
 "من فضلك أضبط إعدادات المؤالف قبل البحث عن القنوات ."
 
 msgid "No updates available"
@@ -5824,19 +5972,25 @@ msgstr "لا تحديثات متوفرة. الرجاء معاودة المحاو
 msgid "No wireless networks found! Searching..."
 msgstr "لا يوجد شبكات للاسلكية ! جار البحث..."
 
-msgid "No working local network adapter found.\n"
+msgid ""
+"No working local network adapter found.\n"
 "Please verify that you have attached a network cable and your network is configured correctly."
-msgstr "لا يوجد محول شبكة \n"
+msgstr ""
+"لا يوجد محول شبكة \n"
 "من فضلك تأكد من توصيل كابل الشبكة وأن إعدادات الشبكة تمت بشكل صحيح."
 
-msgid "No working wireless network adapter found.\n"
+msgid ""
+"No working wireless network adapter found.\n"
 "Please verify that you have attached a compatible WLAN device and your network is configured correctly."
-msgstr "لم يتم العثور على محول شبكة لاسلكىة. \n"
+msgstr ""
+"لم يتم العثور على محول شبكة لاسلكىة. \n"
 "رجاء التأكد من توصيل محول شبكة مناسب وأن ضبط الشبكة قد تم بشكل صحيح."
 
-msgid "No working wireless network interface found.\n"
+msgid ""
+"No working wireless network interface found.\n"
 " Please verify that you have attached a compatible WLAN device or enable your local network interface."
-msgstr "لم يتم العثور على واجهة شبكة تعمل.\n"
+msgstr ""
+"لم يتم العثور على واجهة شبكة تعمل.\n"
 "الرجاء التأكد من توصيل محول الشبكة بشكل مناسب أو قم بتشغيل واجهة الشبكة المحلية."
 
 msgid "No, I do not want to install plugins"
@@ -5907,9 +6061,11 @@ msgstr "إختبار الشبكة: "
 msgid "Note: when enabled, and you do want standby mode after wake up, set option 'Startup to Standby' as 'No, except Wakeup timer'."
 msgstr "'ملاحظة: عند التمكين ، وتريد وضع الاستعداد بعد الاستيقاظ ، اضبط الخيار 'بدء التشغيل على الاستعداد' على أنه 'لا ، باستثناء مؤقت التنبيه"
 
-msgid "Nothing to scan!\n"
+msgid ""
+"Nothing to scan!\n"
 "Please setup your tuner settings before you start a service scan."
-msgstr "لا يوجد شيئ للبحث ! \n"
+msgstr ""
+"لا يوجد شيئ للبحث ! \n"
 "من فضلك قم بضبط المؤالف قبل بدأ البحث."
 
 msgid "Nothing to scan! Setup your tuner and try again."
@@ -6437,17 +6593,21 @@ msgstr "الرجاء اختيار العلامة للتصفية..."
 msgid "Please select the movie path..."
 msgstr "من فضلك أختار مسار الفلم..."
 
-msgid "Please select the network interface that you want to use for your internet connection.\n"
+msgid ""
+"Please select the network interface that you want to use for your internet connection.\n"
 "\n"
 "Please press OK to continue."
-msgstr "من فضلك أختار واجهة الشبكة التى تريد استخدامها فى الاتصال بالانترنت.\n"
+msgstr ""
+"من فضلك أختار واجهة الشبكة التى تريد استخدامها فى الاتصال بالانترنت.\n"
 "\n"
 "أضغط موافق للاستمرار."
 
-msgid "Please select the wireless network that you want to connect to.\n"
+msgid ""
+"Please select the wireless network that you want to connect to.\n"
 "\n"
 "Please press OK to continue."
-msgstr "من فضلك أختار الشبكة اللاسلكيه التى تريد الاتصال بها \n"
+msgstr ""
+"من فضلك أختار الشبكة اللاسلكيه التى تريد الاتصال بها \n"
 "\n"
 "أضغط موافق للاستمرار."
 
@@ -6493,10 +6653,12 @@ msgstr "من فضلك أضبط المؤالف أ"
 msgid "Please setup the following basic configs!"
 msgstr "!يرجى إعداد التكوينات الأساسية التالية"
 
-msgid "Please use direction keys to move the PiP window.\n"
+msgid ""
+"Please use direction keys to move the PiP window.\n"
 "Press Bouquet +/- to resize the window.\n"
 "Press OK to go back to the TV mode or EXIT to cancel the moving."
-msgstr "من فضلك استخدم أزرار الاسهم لتحريك نافذه قناة داخل قناة.\n"
+msgstr ""
+"من فضلك استخدم أزرار الاسهم لتحريك نافذه قناة داخل قناة.\n"
 "أضغط زر الباقات +/- لتغير مقاس النافذة."
 
 msgid "Please use the UP and DOWN keys to select your language. Afterwards press the OK button."
@@ -7645,6 +7807,10 @@ msgid "Scan completed, %d channel found."
 msgid_plural "Scan completed, %d channels found."
 msgstr[0] "قنوات وجدت %d ,البحث إكتمل"
 msgstr[1] "قنوات وجدت %d ,البحث إكتمل"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "Scan failed!"
 msgstr "فشل البحث!"
@@ -7674,18 +7840,26 @@ msgstr "أبحث فى الشبكة عن نقاط دخول لاسلكيه وأت�
 msgid "Scanning %s..."
 msgstr "...%s جاري البحث"
 
-#, fuzzy, python-format
 #. TRANSLATORS: The stb is performing a channel scan, progress percentage is printed in '%d' (and '%%' will show a single '%' symbol), python-format
+#, fuzzy, python-format
 msgid "Scanning - %d%% completed"
 msgid_plural "Scanning - %d%% completed"
 msgstr[0] "اكتمل %d ,المسح"
 msgstr[1] "اكتمل %d ,المسح"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 #, fuzzy, python-format
 msgid "Scanning completed, %d channel found"
 msgid_plural "Scanning completed, %d channels found"
 msgstr[0] "قناة وجدت %d ,اكتمل المسح"
 msgstr[1] "قناة وجدت %d ,اكتمل المسح"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "Scanning..."
 msgstr "جاري البحث..."
@@ -8069,9 +8243,11 @@ msgstr "أختار الشبكة اللاسلكيه"
 msgid "Select your ATSC provider."
 msgstr "حدد مزود خدمات لجنة أنظمة التلفزيون المتقدمة."
 
-msgid "Select your backup device.\n"
+msgid ""
+"Select your backup device.\n"
 "Current device: "
-msgstr "أختار النسخة الإحتياطية في جهازك .\n"
+msgstr ""
+"أختار النسخة الإحتياطية في جهازك .\n"
 "الجهاز الحالي:"
 
 msgid "Select your country. If not available select 'all'."
@@ -8180,9 +8356,11 @@ msgstr "إعدادات قيم المؤالف"
 msgid "Service info font size"
 msgstr "قائمة القنوات"
 
-msgid "Service invalid!\n"
+msgid ""
+"Service invalid!\n"
 "(Timeout reading PMT)"
-msgstr "فشل الخدمة !\n"
+msgstr ""
+"فشل الخدمة !\n"
 "(مهلة القراءة مؤقتة )"
 
 msgid "Service name"
@@ -8192,9 +8370,11 @@ msgstr "أسم القناة"
 msgid "Service name font size"
 msgstr "أسم القناة"
 
-msgid "Service not found!\n"
+msgid ""
+"Service not found!\n"
 "(SID not found in PAT)"
-msgstr "الخدمة غير متوفرة!\n"
+msgstr ""
+"الخدمة غير متوفرة!\n"
 "(لم يتم العثور على معرف الحماية)"
 
 msgid "Service reference"
@@ -8210,9 +8390,11 @@ msgstr "بحث عـن القنـوات"
 msgid "Service title mode"
 msgstr "وضع عنوان الخدمة"
 
-msgid "Service unavailable!\n"
+msgid ""
+"Service unavailable!\n"
 "Check tuner configuration!"
-msgstr "القناة غير متوفرة !\n"
+msgstr ""
+"القناة غير متوفرة !\n"
 "تأكد من تهيئة المؤالف!"
 
 msgid "Servicename"
@@ -8834,9 +9016,11 @@ msgstr "آسف ، لا يوجد تفاصيل متاحة !"
 msgid "Sorry, this tuner is in use."
 msgstr "عذرا، هذا المؤالف قيد الاستخدام."
 
-msgid "Sorry, your backup destination is not writeable.\n"
+msgid ""
+"Sorry, your backup destination is not writeable.\n"
 "Please select a different one."
-msgstr "أسف، النسخة الاحتياطية الخاصة بك غير قابلة للكتابة.\n"
+msgstr ""
+"أسف، النسخة الاحتياطية الخاصة بك غير قابلة للكتابة.\n"
 "يرجى تحديد أخرى مختلفة."
 
 msgid "Sort"
@@ -9252,9 +9436,11 @@ msgstr "الاحد"
 msgid "Sunday"
 msgstr "الاحد"
 
-msgid "Sundtek - hardware blind scan in progress.\n"
+msgid ""
+"Sundtek - hardware blind scan in progress.\n"
 "Please wait(3-20 min) for the scan to finish."
-msgstr "Sundtek - فحص أعمى للأجهزة قيد التقدم.\n"
+msgstr ""
+"Sundtek - فحص أعمى للأجهزة قيد التقدم.\n"
 "يرجى الانتظار (3-20 دقيقة) حتى ينتهي الفحص."
 
 msgid "Suriname"
@@ -9397,7 +9583,8 @@ msgstr "التحول الزمني"
 
 #. TRANSLATORS: Add here whatever should be shown in the "translator" about screen, up to 6 lines (use \n for newline)
 msgid "TRANSLATOR_INFO"
-msgstr "هذه الترجمة مقدمة لك من باب المجاملة:\n"
+msgstr ""
+"هذه الترجمة مقدمة لك من باب المجاملة:\n"
 "\n"
 "فريق OpenPLiللتصحيحات ، يرجى مراسلتنا عبر البريد الإلكتروني على:\n"
 "translators@openpli.org"
@@ -9480,14 +9667,18 @@ msgstr "التايلاندية"
 msgid "Thailand"
 msgstr "التايلندية"
 
-msgid "Thank you for using the wizard.\n"
+msgid ""
+"Thank you for using the wizard.\n"
 "Please press OK to continue."
-msgstr "شكرا لإستخدامك نافذة الإعدادات.\n"
+msgstr ""
+"شكرا لإستخدامك نافذة الإعدادات.\n"
 "من فضلك أضغط موافق للاستمرار."
 
-msgid "Thank you for using the wizard. Your receiver is now ready for use.\n"
+msgid ""
+"Thank you for using the wizard. Your receiver is now ready for use.\n"
 "Press OK to start using your receiver."
-msgstr "شكرا لك على استخدام هذه النافذة. %s %s جاهزة الآن للاستخدام.\n"
+msgstr ""
+"شكرا لك على استخدام هذه النافذة. %s %s جاهزة الآن للاستخدام.\n"
 "يرجى الضغط على موافق لبدء إستخدامها %s %s."
 
 #, python-format
@@ -9515,21 +9706,26 @@ msgstr "الرقم السري الذي قمت بإدخاله مختلف."
 msgid "The command to wake from standby will be sent multiple times."
 msgstr ".سيتم إرسال أمر التنبيه من وضع الاستعداد عدة مرات"
 
-msgid "The current image might not be stable.\n"
+msgid ""
+"The current image might not be stable.\n"
 "For more information see %s."
-msgstr "قد تكون الصورة الحالية غير مستقرة.\n"
+msgstr ""
+"قد تكون الصورة الحالية غير مستقرة.\n"
 "لمزيد من المعلومات، راجع %s."
 
 #, python-format
-msgid "The directory %s is not writable.\n"
+msgid ""
+"The directory %s is not writable.\n"
 "Make sure you select a writable directory instead."
-msgstr "الدليل %s غير قابل للكتابة.\n"
+msgstr ""
+"الدليل %s غير قابل للكتابة.\n"
 "تأكد من إختيار دليل يمكنك الكتابة فيه."
 
 msgid ""
 "The enigma.info file for the boxinformation is not available or the content is invalid.\n"
 "Press any key to continue?"
-msgstr "الملف enigma.info الخاص بمعلومات الصندوق غير متوفر أو المحتوى غير صالح.\n"
+msgstr ""
+"الملف enigma.info الخاص بمعلومات الصندوق غير متوفر أو المحتوى غير صالح.\n"
 "اضغط على أى زر للاستمرار؟"
 
 msgid "The following files were found..."
@@ -9538,9 +9734,11 @@ msgstr "تم العثور على هذه الملفات..."
 msgid "The hostname or the IP address of the NTP server to synchronise the time with."
 msgstr ".لمزامنة الوقت معه NTP لخادم IP اسم المضيف أو عنوان"
 
-msgid "The network wizard extension is not installed!\n"
+msgid ""
+"The network wizard extension is not installed!\n"
 "Please install it."
-msgstr "لم يتم تثبيت ملحقات معالج الشبكة!\n"
+msgstr ""
+"لم يتم تثبيت ملحقات معالج الشبكة!\n"
 "الرجاء منك تثبيتها."
 
 msgid "The number of steps to change the volume on the device the keys are forwarded to."
@@ -9549,18 +9747,21 @@ msgstr ".عدد الخطوات لتغيير مستوى الصوت على الج�
 msgid "The order and grouping of the help information list can be controlled using MENU>Setup>User Interface>Settings>Sort order for help screen."
 msgstr "يمكن التحكم في ترتيب وتجميع قائمة معلومات المساعدة باستخدام القائمة>الإعداد>واجهة المستخدم>الإعدادات>ترتيب الفرز لشاشة المساعدة."
 
-msgid "The overscan wizard has been completed.\n"
+msgid ""
+"The overscan wizard has been completed.\n"
 "\n"
 "Note: you can always start the Overscan wizard later, via\n"
 "\n"
 "Menu->Installation->System->Audio/Video->Overscan wizard"
-msgstr "تم إكمال معالج المسح الزائد.\n"
+msgstr ""
+"تم إكمال معالج المسح الزائد.\n"
 "\n"
 "ملاحظة: يمكنك دائمًا بدء تشغيل معالج أكثر من المسح لاحقًا ، عبر\n"
 "\n"
 "القائمة-> التثبيت-> النظام-> الصوت / الفيديو-> معالج الفحص الزائد"
 
-msgid "The overscan wizard helps you to setup your TV in the correct way.\n"
+msgid ""
+"The overscan wizard helps you to setup your TV in the correct way.\n"
 "\n"
 "For the majority of TV's, the factory default is to have overscan enabled. This means you are always watching a \"zoomed in\" picture instead of real HD, and parts of the user inferface (skin) may be invisible.\n"
 "\n"
@@ -9572,7 +9773,8 @@ msgid "The overscan wizard helps you to setup your TV in the correct way.\n"
 "If you see the tips of all eight arrowheads, then your TV has overscan disabled.\n"
 "\n"
 "Test Pattern by TigerDave - www.tigerdave.com/ht_menu.htm"
-msgstr "يساعدك معالج المسح الزائد على إعداد التلفزيون الخاص بك بالطريقة الصحيحة.\n"
+msgstr ""
+"يساعدك معالج المسح الزائد على إعداد التلفزيون الخاص بك بالطريقة الصحيحة.\n"
 "\n"
 "بالنسبة لغالبية أجهزة التلفزيون ، يكون الإعداد الافتراضي للمصنع هو تمكين ميزة المسح الزائد. هذا يعني أنك تشاهد دائمًا صورة \"مكبرة \" بدلاً من الدقة العالية الحقيقية ، وقد تكون أجزاء من واجهة المستخدم (الجلد) غير مرئية.\n"
 "\n"
@@ -9608,9 +9810,11 @@ msgstr "تم تفعيل تكوين شبكة الانترنت الخاصة بك."
 msgid "The sleep timer has been disabled."
 msgstr ".تم تعطيل مؤقت السكون"
 
-msgid "The software management extension is not installed!\n"
+msgid ""
+"The software management extension is not installed!\n"
 "Please install it."
-msgstr "لم يتم تثبيت إضافات مدير البرمجة!\n"
+msgstr ""
+"لم يتم تثبيت إضافات مدير البرمجة!\n"
 "الرجاء منك تثبيتها."
 
 msgid "The status of the current image could not be checked because %s can not be reached."
@@ -9629,14 +9833,18 @@ msgstr "جاري إعادة تشغيل واجهة المستخدم على الخ
 msgid "The user interface of your receiver is restarting in debug mode"
 msgstr "جاري إعادة تشغيل واجهة المستخدم على الخاص بك"
 
-msgid "The wireless LAN plugin is not installed!\n"
+msgid ""
+"The wireless LAN plugin is not installed!\n"
 "Please install it and choose what you want to do next."
-msgstr "لم يتم تثبيت الإضافة الشبكة الاسلكية!\n"
+msgstr ""
+"لم يتم تثبيت الإضافة الشبكة الاسلكية!\n"
 "الرجاء تثبيته وأختار ما تريد القيام به بعد ذلك."
 
-msgid "The wireless LAN plugin is not installed!\n"
+msgid ""
+"The wireless LAN plugin is not installed!\n"
 "Please install it."
-msgstr "لم يتم تثبيت الإضافة الشبكة الاسلكية!\n"
+msgstr ""
+"لم يتم تثبيت الإضافة الشبكة الاسلكية!\n"
 "الرجاء منك تثبيته."
 
 #, python-format
@@ -9658,9 +9866,11 @@ msgstr "لا توجد تحديثات متوفرة."
 msgid "There is no signal to lock on !"
 msgstr "لا توجد اشاره للقفل !"
 
-msgid "There might not be enough Space on the selected Partition.\n"
+msgid ""
+"There might not be enough Space on the selected Partition.\n"
 "Do you really want to continue?"
-msgstr "قد لا يكون هناك مساحه كافيه على القسم المختار..\n"
+msgstr ""
+"قد لا يكون هناك مساحه كافيه على القسم المختار..\n"
 "هل تريد فعلا الاستمرار؟"
 
 msgid "This DVD RW medium is already formatted - reformatting will erase all content on the disc."
@@ -9679,10 +9889,12 @@ msgstr "بعد انتهاء التسجيل ، ستتوقف الخدمة تلقا
 msgid "This field allows you to search an additional symbol rate up to %s."
 msgstr "يتيح لك هذا الحقل بالبحث عن معدل ترميز إضافي يصل إلى %s."
 
-msgid "This info is for developers only.\n"
+msgid ""
+"This info is for developers only.\n"
 "For normal users it is not relevant.\n"
 "Please don't panic if you see values displayed looking suspicious!"
-msgstr "هذه المعلومات للمطورين فقط.\n"
+msgstr ""
+"هذه المعلومات للمطورين فقط.\n"
 "بالنسبة للمستخدمين العاديين ، هذا غير مناسب.\n"
 "من فضلك لا داعي للذعر إذا رأيت القيم المعروضة تبدو مريبة!"
 
@@ -9834,11 +10046,13 @@ msgstr "يعتمد هذا الإعداد على مزود قنوات الكيبل
 msgid "This setting is for special setups only. It gives this LNB higher priority over other LNBs with lower values. The free LNB with the highest priority will be the first LNB selected for tuning services."
 msgstr "هذا الإعداد مخصص للإعدادات الخاصة فقط. يعطي هذا الالقط أولوية أعلى على الألواقط الأخرى بقيم أقل. سيكون الاقط المتاح ذو الأولوية القصوى أول لاقط يتم اختياره لضبط القنوات."
 
-msgid "This test checks for configured nameservers.\n"
+msgid ""
+"This test checks for configured nameservers.\n"
 "If you get a \"unconfirmed\" message:\n"
 "- please check your DHCP, cabling and adapter setup\n"
 "- if you configured your nameservers manually please verify your entries in the \"Nameserver\" configuration"
-msgstr "أسم الخادم\n"
+msgstr ""
+"أسم الخادم\n"
 "\n"
 "هذا الاختبار لأسماء الخوادم المكونة.\n"
 "\n"
@@ -9846,22 +10060,26 @@ msgstr "أسم الخادم\n"
 "- الرجاء التحقق من إعداد خادم الايبي التلقائي, والكيبل وإعدادات المحول.\n"
 "- إذا قمت بعمل تكوين أسماء الخوادم الخاصة بك يدويا الرجاء التحقق من المدخلات في تشكيل \"أسم الخادم\"."
 
-msgid "This test checks whether a network cable is connected to your LAN adapter.\n"
+msgid ""
+"This test checks whether a network cable is connected to your LAN adapter.\n"
 "If you get a \"disconnected\" message:\n"
 "- verify that a network cable is attached\n"
 "- verify that the cable is not broken"
-msgstr "شبكه إتصال محليه\n"
+msgstr ""
+"شبكه إتصال محليه\n"
 "\n"
 "يتحقق هذا الاختبار من توصيل كبل الشبكة بمحول الشبكة المحلية الخاص بك.\n"
 "إذا تلقيت رسالة \"تم قطع الاتصال\":\n"
 "- تحقق من تركيب كابل الشبكة.\n"
 "- تحقق من أن الكبل غير مقطوع."
 
-msgid "This test checks whether a valid IP address is found for your LAN adapter.\n"
+msgid ""
+"This test checks whether a valid IP address is found for your LAN adapter.\n"
 "If you get a \"unconfirmed\" message:\n"
 "- no valid IP address was found\n"
 "- please check your DHCP, cabling and adapter setup"
-msgstr "عنوان الايبي\n"
+msgstr ""
+"عنوان الايبي\n"
 "\n"
 "يتحقق هذا الاختبار من العثور على عنوان أيبي صالح لمحول الشبكة المحلية الخاص بك.\n"
 "\n"
@@ -9869,13 +10087,15 @@ msgstr "عنوان الايبي\n"
 "- لم يتم العثور على عنوان أيبي صالح\n"
 "- يرجى التحقق من النظام التلقائي لاختيار الايبيات ، والكيابل وإعداد المحول."
 
-msgid "This test checks whether your LAN adapter is set up for automatic IP address configuration with DHCP.\n"
+msgid ""
+"This test checks whether your LAN adapter is set up for automatic IP address configuration with DHCP.\n"
 "If you get a \"disabled\" message:\n"
 "- then your LAN adapter is configured for manual IP setup\n"
 "- verify thay you have entered the correct IP information in the adapter setup dialog.\n"
 "If you get an \"enabeld\" message:\n"
 "- verify that you have a configured and working DHCP server in your network."
-msgstr "يتحقق هذا الاختبار مما إذا كان محول LAN قد تم إعداده لتكوين عنوان IP التلقائي مع DHCP.\n"
+msgstr ""
+"يتحقق هذا الاختبار مما إذا كان محول LAN قد تم إعداده لتكوين عنوان IP التلقائي مع DHCP.\n"
 "إذا تلقيت رسالة \" معطلة \":\n"
 "- ثم يتم تكوين محول LAN الخاص بك لإعداد IP يدويًا\n"
 "- تحقق من أنك أدخلت معلومات IP الصحيحة في مربع حوار إعداد المحول.\n"
@@ -9888,9 +10108,11 @@ msgstr ".يكتشف هذا الاختبار محول الشبكة المحلية
 msgid "This valid ONID/TSID"
 msgstr "ONID/TSID هذا صحيح"
 
-msgid "This will (re-)calculate all positions of your rotor and may remove previously memorised positions and fine-tuning!\n"
+msgid ""
+"This will (re-)calculate all positions of your rotor and may remove previously memorised positions and fine-tuning!\n"
 "Are you sure?"
-msgstr "هذا سوف (يعيد) حساب جميع مواقع أقمار النظام المتحرك الخاص بك ، ويمكن حذف المواقع التي حفظتها مسبقا وضبطها بشكل مثالي!\n"
+msgstr ""
+"هذا سوف (يعيد) حساب جميع مواقع أقمار النظام المتحرك الخاص بك ، ويمكن حذف المواقع التي حفظتها مسبقا وضبطها بشكل مثالي!\n"
 "هل أنت واثق؟"
 
 msgid "Three"
@@ -9935,9 +10157,11 @@ msgstr "إدخال الوقت"
 msgid "Timer log"
 msgstr "المؤقت"
 
-msgid "Timer overlap in timers.xml detected!\n"
+msgid ""
+"Timer overlap in timers.xml detected!\n"
 "Please recheck it!"
-msgstr "التداخل الموقت في المؤقتاتا.xml الكشف!\n"
+msgstr ""
+"التداخل الموقت في المؤقتاتا.xml الكشف!\n"
 "الرجاء إعادة فحص ذلك!"
 
 msgid "Timer overview"
@@ -10269,10 +10493,12 @@ msgstr "مفقودة Kexec Multiboot غير قادر على إكمال - ملف�
 msgid "Unable to create the required directories on the media (e.g. USB stick or Harddisk) - Please verify media and try again!"
 msgstr "!تعذر إنشاء الدلائل المطلوبة على الوسائط (على سبيل المثال ، ذاكرة الفلاش أو القرص الصلب) - يرجى التحقق من الوسائط والمحاولة مرة أخرى"
 
-msgid "Unattended update in progress\n"
+msgid ""
+"Unattended update in progress\n"
 "Please wait until your receiver reboots\n"
 "This may take a few minutes"
-msgstr "الترقية قيد التقدم\n"
+msgstr ""
+"الترقية قيد التقدم\n"
 "الرجاء الانتظار حتى يعاد تشغيل %s %s الخاص بك\n"
 "هذا قد يستغرق بضع دقائق"
 
@@ -10372,6 +10598,10 @@ msgid "Update completed, %d package was installed."
 msgid_plural "Update completed, %d packages were installed."
 msgstr[0] ".تم تثبيت حزمة %d ,اكتمل التحديث"
 msgstr[1] ".تم تثبيت حزم %d ,اكتمل التحديث"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "Update completed. Do you want to reboot your receiver?"
 msgstr "هل تريد أعاده تشغيل جهاز الاستقبال الخاص بك ؟"
@@ -10586,7 +10816,7 @@ msgid "VOB file"
 msgstr "ملف الترجمة فوب"
 
 msgid "VOL+"
-msgstr "+الصوت""
+msgstr "\"+الصوت\""
 
 msgid "VOL-"
 msgstr "-الصوت"
@@ -10627,12 +10857,14 @@ msgstr "اعداد تحسين الفيديو"
 msgid "Video enhancement setup"
 msgstr "اعداد تحسين الفيديو"
 
-msgid "Video input selection\n"
+msgid ""
+"Video input selection\n"
 "\n"
 "Please press OK if you can see this page on your TV (or select a different input port).\n"
 "\n"
 "The next input port will be automatically probed in 20 seconds."
-msgstr "تحديد إدخال الفيديو \n"
+msgstr ""
+"تحديد إدخال الفيديو \n"
 "\n"
 "يُرجى الضغط على 'موافق' إذا كان بإمكانك رؤية هذه الصفحة على التلفزيون (أو تحديد منفذ إدخال مختلف).\n"
 "\n"
@@ -10822,10 +11054,12 @@ msgstr "واليس وفوتونا"
 msgid "Warning"
 msgstr "تحذير"
 
-msgid "Warning!\n"
+msgid ""
+"Warning!\n"
 "This is an option for advanced users.\n"
 "Really disable timer conflict detection?"
-msgstr "تحذير!\n"
+msgstr ""
+"تحذير!\n"
 "هذا خيار للمستخدمين المتقدمين.\n"
 "هل تريد حقًا تعطيل اكتشاف تعارض المؤقت؟"
 
@@ -10856,33 +11090,39 @@ msgstr "ايام الاسبوع"
 msgid "Weighted position"
 msgstr "الموقع الموزون"
 
-msgid "Welcome to the cutlist editor.\n"
+msgid ""
+"Welcome to the cutlist editor.\n"
 "\n"
 "Seek to the start of the stuff you want to cut away. Press OK, select 'start cut'.\n"
 "\n"
 "Then seek to the end, press OK, select 'end cut'. That's it."
-msgstr "أهلا وسهلا بك في تحرير قوائم القص.\n"
+msgstr ""
+"أهلا وسهلا بك في تحرير قوائم القص.\n"
 "\n"
 "تقديم بداية الاشياء التي تريد قطعها.أضغط مفتاح موافق,أختار'تشغيل القص'.\n"
 "\n"
 "أصغط على مفتاح موافق لإختيار نهاية القص. هذا كل شي."
 
-msgid "Welcome.\n"
+msgid ""
+"Welcome.\n"
 "\n"
 "If you want to connect your receiver to the Internet, this wizard will guide you through the basic network setup of your receiver.\n"
 "\n"
 "Press OK to start configuring your network"
-msgstr "أهلا وسهلا.\n"
+msgstr ""
+"أهلا وسهلا.\n"
 "\n"
 " إذا كنت ترغب في الاتصال %s %s على شبكة الإنترنت، وهذا المعالج سوف يذلك من خلال إعداد شبكة إتصال أساسية من الضبط الخاص بك %s %s.\n"
 "\n"
 "اضغط على زر موافق لبدء تكوين الشبكة"
 
-msgid "Welcome.\n"
+msgid ""
+"Welcome.\n"
 "\n"
 "This start wizard will guide you through the basic setup of your receiver.\n"
 "Press the OK button on your remote control to move to the next step."
-msgstr "أهلا وسهلا \n"
+msgstr ""
+"أهلا وسهلا \n"
 "\n"
 "هذا المعالج بداية توجه لكم من خلال الإعداد الأساسي الخاصة بك ليالي الصورة %s %s.\n"
 "اضغط على زر موافق على جهاز التحكم عن بعد للانتقال إلى الخطوة التالية."
@@ -10906,7 +11146,8 @@ msgid "When enabled a simplified version from the second infobar is shown. This 
 msgstr "عند التمكين، يتم عرض نسخة مبسطة من شريط المعلومات الثاني. يمكن أيضًا تبديل هذا على الفور عن طريق الضغط على الزر 'موافق' عندما يكون شريط المعلومات الثاني مرئيًا. سيختفي شريط المعلومات قريبًا ثم يظهر في الوضع الآخر."
 
 msgid "When enabled enigma2 will load unlinked userbouquets. This means that userbouquets that are available, but not included in the bouquets.tv or bouquets.radio files, will still be loaded. This allows you for example to keep your own user bouquet while installed settings are updated"
-msgstr "عند تمكين الانجما 2 سيتم تحميل باقات المستخدم غير مرتبطة. وهذا يعني أنه لا يزال سيتم تحميل باقات المستخدم التي تتوفر ، ولكن لم يتم تضمينها في قنوات الباقات. أو ملفات باقات القنوات الإذاعية هذا يسمح لك على سبيل المثال للحفاظ على باقة المستخدم الخاصة بك أثناء التثبيت\n"
+msgstr ""
+"عند تمكين الانجما 2 سيتم تحميل باقات المستخدم غير مرتبطة. وهذا يعني أنه لا يزال سيتم تحميل باقات المستخدم التي تتوفر ، ولكن لم يتم تضمينها في قنوات الباقات. أو ملفات باقات القنوات الإذاعية هذا يسمح لك على سبيل المثال للحفاظ على باقة المستخدم الخاصة بك أثناء التثبيت\n"
 "تتم ترقية الإعدادات"
 
 msgid "When enabled extra information is shown on the infobar. This can also be toggled instantly by holding the OK button when the inforbar is not visible."
@@ -11276,10 +11517,12 @@ msgid "Yesterday"
 msgstr "أمس"
 
 #, python-format
-msgid "You already have a channel list installed,\n"
+msgid ""
+"You already have a channel list installed,\n"
 "would you like to remove\n"
 "\"%s\"?"
-msgstr "لديك بالفعل قائمة قنوات مثبته,\n"
+msgstr ""
+"لديك بالفعل قائمة قنوات مثبته,\n"
 "هل ترغب في حذفها\n"
 "\"%s\"؟"
 
@@ -11316,7 +11559,8 @@ msgstr "نعم ، والعودة إلى قائمه الأفلام"
 msgid "You cannot delete this!"
 msgstr "لايمكنك مسح هذه!"
 
-msgid "You did not see all eight arrow heads. This means your TV has overscan enabled and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition this you may also miss parts of the user interface, for example volume bars and more.\n"
+msgid ""
+"You did not see all eight arrow heads. This means your TV has overscan enabled and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition this you may also miss parts of the user interface, for example volume bars and more.\n"
 "\n"
 "Unfortunately, your model of receiver is not capable to adjust the dimensions of the user interface. If not everything is visible, you should change the installed skin to one that supports the overscan area of your TV.\n"
 "\n"
@@ -11325,7 +11569,8 @@ msgid "You did not see all eight arrow heads. This means your TV has overscan en
 "Note: you can always start the Overscan wizard later, via\n"
 "\n"
 "menu->installation->system->Overscan wizard"
-msgstr "لم تشاهد جميع رؤوس الأسهم الثمانية. وهذا يعني أن جهاز التلفزيون الخاص بك قد تم تمكين المسح الزائد ويعرض لك صورة مكبرة ، مما يتسبب في فقد جزء من شاشة عالية الدقة بالكامل. بالإضافة إلى ذلك ، قد تفوتك أيضًا أجزاء من واجهة المستخدم ، على سبيل المثال أشرطة الصوت والمزيد.\n"
+msgstr ""
+"لم تشاهد جميع رؤوس الأسهم الثمانية. وهذا يعني أن جهاز التلفزيون الخاص بك قد تم تمكين المسح الزائد ويعرض لك صورة مكبرة ، مما يتسبب في فقد جزء من شاشة عالية الدقة بالكامل. بالإضافة إلى ذلك ، قد تفوتك أيضًا أجزاء من واجهة المستخدم ، على سبيل المثال أشرطة الصوت والمزيد.\n"
 " \n"
 "لسوء الحظ ، طراز جهاز الاستقبال الخاص بك غير قادر على ضبط أبعاد واجهة المستخدم. إذا لم يكن كل شيء مرئيًا ، فيجب تغيير السطح المثبت إلى المظهر الذي يدعم منطقة المسح الزائد للتلفزيون الخاص بك.\n"
 "\n"
@@ -11335,13 +11580,15 @@ msgstr "لم تشاهد جميع رؤوس الأسهم الثمانية. وهذ�
 "\n"
 "القائمة-> التثبيت-> النظام-> معالج الفحص الزائد"
 
-msgid "You did not see all eight arrow heads. This means your TV has overscan enabled and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition to this you may also miss parts of the user interface, for example volume bars and more.\n"
+msgid ""
+"You did not see all eight arrow heads. This means your TV has overscan enabled and presents you with a zoomed-in picture, causing you to loose part of a full HD screen. In addition to this you may also miss parts of the user interface, for example volume bars and more.\n"
 "\n"
 "You can now try to resize and change the position of the user interface until you see the eight arrow heads.\n"
 "\n"
 "When done press OK.\n"
 "\n"
-msgstr "لم تشاهد جميع رؤوس الأسهم الثمانية. وهذا يعني أن جهاز التلفزيون الخاص بك قد تم تمكين المسح الزائد ويعرض لك صورة مكبرة ، مما يتسبب في فقد جزء من شاشة عالية الدقة بالكامل. بالإضافة إلى ذلك ، قد تفقد أيضًا أجزاء من المستخدم الواجهة ، على سبيل المثال أشرطة الصوت والمزيد.\n"
+msgstr ""
+"لم تشاهد جميع رؤوس الأسهم الثمانية. وهذا يعني أن جهاز التلفزيون الخاص بك قد تم تمكين المسح الزائد ويعرض لك صورة مكبرة ، مما يتسبب في فقد جزء من شاشة عالية الدقة بالكامل. بالإضافة إلى ذلك ، قد تفقد أيضًا أجزاء من المستخدم الواجهة ، على سبيل المثال أشرطة الصوت والمزيد.\n"
 " \n"
 "يمكنك الآن محاولة تغيير حجم واجهة المستخدم وتغيير موضعها حتى ترى رؤوس الأسهم الثمانية.\n"
 "\n"
@@ -11371,16 +11618,20 @@ msgstr "هذه المجموعه تزيد عن حجم وسيط ذو طبقه وا
 msgid "Your current collection will get lost!"
 msgstr "سوف تفقد المجموعة الحالية!"
 
-msgid "Your frontprocessor will be updated\n"
+msgid ""
+"Your frontprocessor will be updated\n"
 "Please wait until your receiver reboots\n"
 "This may take a few minutes"
-msgstr "ستتم الترقية عبر المعالج الأمامي الخاص بك\n"
+msgstr ""
+"ستتم الترقية عبر المعالج الأمامي الخاص بك\n"
 "الرجاء الانتظار حتى يتم %s %s أعاده تشغيل جهازك\n"
 "هذا قد يستغرق بضع دقائق"
 
-msgid "Your internet connection is not working!\n"
+msgid ""
+"Your internet connection is not working!\n"
 "Please choose what you want to do next."
-msgstr "اتصال شبكة الإنترنت الخاصة بك لا يعمل!\n"
+msgstr ""
+"اتصال شبكة الإنترنت الخاصة بك لا يعمل!\n"
 "الرجاء اختيار ما تريد القيام به بعد ذلك."
 
 #, python-format
@@ -11399,21 +11650,25 @@ msgstr "يمكن لجهاز الاستقبال الخاص بك استخدام ط
 msgid "Your receiver does not have an internet connection"
 msgstr "جهاز الاستقبال الخاص بك غير متصل بالانترنت"
 
-msgid "Your receiver is now ready to be used.\n"
+msgid ""
+"Your receiver is now ready to be used.\n"
 "\n"
 "Your internet connection is working.\n"
 "\n"
-msgstr "جهازك %s %s جاهز الآن للاستخدام.\n"
+msgstr ""
+"جهازك %s %s جاهز الآن للاستخدام.\n"
 "\n"
 "اتصالك بالإنترنت يعمل الآن.\n"
 "\n"
 
-msgid "Your receiver is now ready to use.\n"
+msgid ""
+"Your receiver is now ready to use.\n"
 "\n"
 "Your internet connection is working now.\n"
 "\n"
 "Please press OK to continue."
-msgstr "الاتصال بالإنترنت يعمل الآن.\n"
+msgstr ""
+"الاتصال بالإنترنت يعمل الآن.\n"
 "\n"
 "الرجاء الضغط علي \"موافق\" للمتابعة."
 
@@ -11435,11 +11690,13 @@ msgstr "جهاز الاستقبال الخاص بك غير متصل بالإنت
 msgid "Your receiver will restart after pressing OK on your remote control."
 msgstr "سيتم إعادة تشغيل جهاز الفوبلس الخاص بك بعد الضغط على زر موافق من الريموت كونترول."
 
-msgid "Your wireless LAN internet connection could not be started!\n"
+msgid ""
+"Your wireless LAN internet connection could not be started!\n"
 "Have you attached your USB WLAN Stick?\n"
 "\n"
 "Please choose what you want to do next."
-msgstr "تعثر تشغيل إتصال كيبل الإنترنت الخاص بك!\n"
+msgstr ""
+"تعثر تشغيل إتصال كيبل الإنترنت الخاص بك!\n"
 "هل مرفق فلاش إتصال الشبكة اللاسلكية الخاص بك?\n"
 "\n"
 "الرجاء اختيار ما تريد القيام به بعد ذلك."
@@ -12517,6 +12774,10 @@ msgid "with %d error"
 msgid_plural "with %d errors"
 msgstr[0] "خطأ %d مع"
 msgstr[1] "أخطاء %d مع"
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
 
 msgid "with errors"
 msgstr "إخفاء أخطاء التنقل"
@@ -12935,16 +13196,20 @@ msgstr "أخرى 10 تحديثات"
 msgid "Image Information"
 msgstr "معلومات الصورة"
 
-msgid "Nothing to install.\n"
+msgid ""
+"Nothing to install.\n"
 "You have to upload a bh.tgz package in the /tmp.\n"
 "directory before to install Addons."
-msgstr "لا شيء لتثبيته. \n"
+msgstr ""
+"لا شيء لتثبيته. \n"
 "عليك تحميل حزمة bh.tgz في مسار tmp"
 
-msgid "Nothing to install.\n"
+msgid ""
+"Nothing to install.\n"
 "You have to upload a ipk package in the /tmp.\n"
 "directory before to install Addons."
-msgstr "لا شيء لتثبيته. \n"
+msgstr ""
+"لا شيء لتثبيته. \n"
 "عليك تحميل حزمة ipk في مسار tmp"
 
 msgid "Logs location"
