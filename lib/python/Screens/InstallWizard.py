@@ -11,6 +11,9 @@ from enigma import eDVBDB
 config.misc.installwizard = ConfigSubsection()
 config.misc.installwizard.hasnetwork = ConfigBoolean(default=False)
 config.misc.installwizard.opkgloaded = ConfigBoolean(default=False)
+config.misc.installwizard.downloadchannellist = ConfigBoolean(default=False)
+config.misc.installwizard.selectedchannellist = ConfigSelection(choices={"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3",
+	"13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}, default="19e-23e-basis")
 config.misc.installwizard.channellistdownloaded = ConfigBoolean(default=False)
 
 
@@ -37,9 +40,8 @@ class InstallWizard(ConfigListScreen, Screen):
 			self.adapters = [adapter for adapter in iNetwork.getAdapterList() if adapter in ('eth0', 'eth1')]
 			self.checkNetwork()
 		elif self.index == self.STATE_CHOISE_CHANNELLIST:
-			self.enabled = ConfigYesNo(default=True, graphic=False)
-			modes = {"19e-23e-basis": "Astra1 Astra3 basis", "19e-23e": "Astra 1 Astra 3", "19e-23e-28e": "Astra 1 Astra 2 Astra 3", "13e-19e-23e-28e": "Astra 1 Astra 2 Astra 3 Hotbird", "9e-13e-19e-23e-28e-rotating": "Rotating", "kabelnl": "Kabel-NL"}
-			self.channellist_type = ConfigSelection(choices=modes, default="19e-23e-basis")
+			self.enabled = config.misc.installwizard.downloadchannellist
+			self.channellist_type = config.misc.installwizard.selectedchannellist
 			self.createMenu()
 		elif self.index == self.INSTALL_PLUGINS:
 			self.noplugins = ConfigNothing()
@@ -152,7 +154,7 @@ class InstallWizard(ConfigListScreen, Screen):
 class InstallWizardOpkgUpdater(Screen):
 	skin = """
 	<screen position="c-300,c-25" size="600,50" title=" ">
-		<widget source="statusbar" render="Label" position="10,5" zPosition="10" size="e-10,30" horizontalAlignment="center" verticalAlignment="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />
+		<widget source="statusbar" render="Label" position="10,5" zPosition="10" size="e-10,30" halign="center" valign="center" font="Regular;22" transparent="1" shadowColor="black" shadowOffset="-1,-1" />
 	</screen>"""
 
 	def __init__(self, session, index, info, cmd, pkg=None):
