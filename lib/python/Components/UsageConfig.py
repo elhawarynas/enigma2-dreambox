@@ -154,6 +154,16 @@ def InitUsageConfig():
 		("235", _("ZZPicon")),
 		("250", _("ZPicon"))
 	])
+	config.usage.show_picon_bkgrn = ConfigSelection(default="transparent", choices=[
+		("none", _("Disabled")),
+		("transparent", _("Transparent")),
+		("blue", _("Blue")),
+		("red", _("Red")),
+		("black", _("Black")),
+		("white", _("White")),
+		("lightgrey", _("Light Grey")),
+		("grey", _("Grey"))
+	])
 	config.usage.servicelist_cursor_behavior = ConfigSelection(default="keep", choices=[
 		("standard", _("Standard")),
 		("keep", _("Keep service")),
@@ -1444,6 +1454,12 @@ def InitUsageConfig():
 		config.usage.vfd_final_scroll_delay = ConfigSelection(default="1000", choices=choicelist)
 		config.usage.vfd_final_scroll_delay.addNotifier(final_scroll_delay, immediate_feedback=False)
 
+	def quadpip_mode_notifier(configElement):
+		if BoxInfo.getItem("HasQuadpip"):
+			open(BoxInfo.getItem("HasQuadpip"), "w").write("mosaic" if configElement.value else "normal")
+	config.usage.QuadpipMode = NoSave(ConfigYesNo(default=False))
+	config.usage.QuadpipMode.addNotifier(quadpip_mode_notifier)
+
 	if BoxInfo.getItem("HasBypassEdidChecking"):
 		def setHasBypassEdidChecking(configElement):
 			with open(BoxInfo.getItem("HasBypassEdidChecking"), "w") as fd:
@@ -1923,13 +1939,19 @@ def InitUsageConfig():
 		config.oscaminfo.showInExtensions = ConfigYesNo(default=True)
 	else:
 		config.oscaminfo.showInExtensions = ConfigYesNo(default=False)
-	config.oscaminfo.userdatafromconf = ConfigYesNo(default=True)
-	config.oscaminfo.autoupdate = ConfigYesNo(default=False)
+	config.oscaminfo.userDataFromConf = ConfigYesNo(default=True)
 	config.oscaminfo.username = ConfigText(default="username", fixed_size=False, visible_width=12)
 	config.oscaminfo.password = ConfigPassword(default="password", fixed_size=False)
 	config.oscaminfo.ip = ConfigIP(default=[127, 0, 0, 1], auto_jump=True)
 	config.oscaminfo.port = ConfigInteger(default=16002, limits=(0, 65536))
-	config.oscaminfo.intervall = ConfigSelectionNumber(min=1, max=600, stepwidth=1, default=10, wraparound=True)
+	choiceList = [
+		(0, _("Disabled"))
+	] + [(x, ngettext("%d Second", "%d Seconds", x) % x) for x in (2, 5, 10, 20, 30)] + [(x * 60, ngettext("%d Minute", "%d Minutes", x) % x) for x in (1, 2, 3)]
+	config.oscaminfo.autoUpdate = ConfigSelection(default=10, choices=choiceList)
+	choiceList = [
+		(0, _("Disabled"))
+	] + [(x, ngettext("%d Second", "%d Seconds", x) % x) for x in (2, 5, 10, 20, 30)] + [(x * 60, ngettext("%d Minute", "%d Minutes", x) % x) for x in (1, 2, 3)]
+	config.oscaminfo.autoUpdateLog = ConfigSelection(default=0, choices=choiceList)
 
 	config.streaming = ConfigSubsection()
 	config.streaming.stream_ecm = ConfigYesNo(default=False)
@@ -1948,6 +1970,7 @@ def InitUsageConfig():
 	config.misc.softcam_streamrelay_url = ConfigIP(default=[127, 0, 0, 1], auto_jump=True)
 	config.misc.softcam_streamrelay_port = ConfigInteger(default=17999, limits=(0, 65535))
 	config.misc.softcam_streamrelay_delay = ConfigSelectionNumber(min=0, max=2000, stepwidth=50, default=0, wraparound=True)
+	config.misc.softcam_hideServerName = ConfigYesNo(default=False)
 
 	config.logmanager = ConfigSubsection()
 	config.logmanager.showinextensions = ConfigYesNo(default=False)

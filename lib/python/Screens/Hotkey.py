@@ -245,6 +245,7 @@ def getHotkeyFunctions():
 		if plugin[2]:
 			hotkey.functions.append((plugin[0], "MenuPlugin/gui/" + plugin[2], "Setup"))
 	hotkey.functions.append((_("Skin Selection"), "Module/Screens.SkinSelector/SkinSelector", "Setup"))
+	hotkey.functions.append((_("Reload Skin"), "ReloadSkin/", "Setup"))
 	hotkey.functions.append((_("PowerMenu"), "Menu/shutdown", "Power"))
 	hotkey.functions.append((_("Standby"), "Module/Screens.Standby/Standby", "Power"))
 	hotkey.functions.append((_("Restart"), "Module/Screens.Standby/TryQuitMainloop/2", "Power"))
@@ -812,6 +813,10 @@ class InfoBarHotkey:
 					if x.get("key") == selected[1]:
 						menu_screen = self.session.open(MainMenu, x)
 						break
+			elif selected[0] == "ReloadSkin":
+				from skin import reloadSkins
+				reloadSkins()
+				self.session.reloadDialogs()
 
 	def showServiceListOrMovies(self):
 		if hasattr(self, "openServiceList"):

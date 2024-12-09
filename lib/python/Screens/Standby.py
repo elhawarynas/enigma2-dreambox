@@ -29,6 +29,7 @@ QUIT_UPGRADE_FP = 4
 QUIT_ERROR_RESTART = 5
 QUIT_DEBUG_RESTART = 6
 QUIT_MANUFACTURER_RESET = 7
+QUIT_KODI = 15
 QUIT_RRECVERY_MODE = 16
 QUIT_UPGRADE_PROGRAM = 42
 QUIT_IMAGE_RESTORE = 43
@@ -256,6 +257,7 @@ class QuitMainloopScreen(Screen):
 			QUIT_SHUTDOWN: _("Your %s %s is shutting down") % getBoxDisplayName(),
 			QUIT_REBOOT: _("Your %s %s is rebooting") % getBoxDisplayName(),
 			QUIT_RESTART: _("The user interface of your %s %s is restarting") % getBoxDisplayName(),
+			QUIT_KODI: _("The user interface of your %s %s will be stopped to run Kodi") % getBoxDisplayName(),
 			QUIT_UPGRADE_FP: _("Your front panel processor will be upgraded\nPlease wait until your %s %s reboots\nThis may take a few minutes") % getBoxDisplayName(),
 			QUIT_DEBUG_RESTART: _("The user interface of your %s %s is restarting\ndue to an error in StartEnigma.py") % getBoxDisplayName(),
 			QUIT_RRECVERY_MODE: _("Your %s %s is rebooting into Recovery Mode") % getBoxDisplayName(),
@@ -288,7 +290,7 @@ def getReasons(session, retvalue=QUIT_SHUTDOWN):
 		reasons.append(_("You seem to be in timeshift!"))
 	if [stream for stream in eStreamServer.getInstance().getConnectedClients() if stream[0] != '127.0.0.1'] or StreamServiceList:
 		reasons.append(_("Client is streaming from this box!"))
-	if not reasons and mediaFilesInUse(session) and retvalue in (QUIT_SHUTDOWN, QUIT_REBOOT, QUIT_UPGRADE_FP, QUIT_UPGRADE_PROGRAM):
+	if not reasons and mediaFilesInUse(session) and retvalue in (QUIT_SHUTDOWN, QUIT_REBOOT, QUIT_KODI, QUIT_UPGRADE_FP, QUIT_UPGRADE_PROGRAM):
 		reasons.append(_("A file from media is in use!"))
 	return "\n".join(reasons)
 
@@ -303,6 +305,7 @@ class TryQuitMainloop(MessageBox):
 				QUIT_SHUTDOWN: _("Really shutdown now?"),
 				QUIT_REBOOT: _("Really reboot now?"),
 				QUIT_RESTART: _("Really restart now?"),
+				QUIT_KODI: _("Really start Kodi and stop user interface now?"),
 				QUIT_UPGRADE_FP: _("Really update the frontprocessor and reboot now?"),
 				QUIT_DEBUG_RESTART: _("Really restart in debug mode now?"),
 				QUIT_RRECVERY_MODE: _("Really reboot into Recovery Mode?"),
@@ -346,9 +349,10 @@ class TryQuitMainloop(MessageBox):
 				if not inStandby:
 					if os.path.exists("/usr/script/standby_enter.sh"):
 						Console().ePopen("/usr/script/standby_enter.sh")
-					if BoxInfo.getItem("HasHDMI-CEC") and config.hdmicec.enabled.value and config.hdmicec.control_tv_standby.value and config.hdmicec.next_boxes_detect.value:
-						import Components.HdmiCec
-						Components.HdmiCec.hdmi_cec.secondBoxActive()
+					if BoxInfo.getItem("HasHDMI-CEC") and config.hdmicec.enabled.value and ((config.hdmicec.control_tv_standby.value and (config.hdmicec.next_boxes_detect.value or config.hdmicec.ethernet_pc_used.value)) or config.hdmicec.handle_deepstandby_events.value != "no"):
+						if config.hdmicec.control_tv_standby.value and config.hdmicec.next_boxes_detect.value:
+							import Components.HdmiCec
+							Components.HdmiCec.hdmi_cec.secondBoxActive()
 						if not hasattr(self, "quitScreen"):
 							self.quitScreen = self.session.instantiateDialog(QuitMainloopScreen)
 							self.quitScreen.show()

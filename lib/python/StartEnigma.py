@@ -249,6 +249,7 @@ class Session:
 		self.screen = SessionGlobals(self)
 		from Components.FrontPanelLed import frontPanelLed
 		frontPanelLed.init(self)
+		self.allDialogs = []
 
 		for p in plugins.getPlugins(PluginDescriptor.WHERE_SESSIONSTART):
 			try:
@@ -307,12 +308,13 @@ class Session:
 		return self.doInstantiateDialog(screen, arguments, kwargs, self.desktop)
 
 	def deleteDialog(self, screen):
+		if screen in self.allDialogs:
+			self.allDialogs.remove(screen)
 		screen.hide()
 		screen.doClose()
 
 	def deleteDialogWithCallback(self, callback, screen, *retVal):
-		screen.hide()
-		screen.doClose()
+		self.deleteDialog(screen)
 		if callback is not None:
 			callback(*retVal)
 
@@ -335,6 +337,7 @@ class Session:
 		# create GUI view of this dialog
 		dlg.setDesktop(desktop)
 		dlg.applySkin()
+		self.allDialogs.append(dlg)
 		return dlg
 
 	def pushCurrent(self):
@@ -417,6 +420,13 @@ class Session:
 		for function in self.onShutdown:
 			if callable(function):
 				function()
+
+	def reloadDialogs(self):
+		for dlg in self.allDialogs:
+			if hasattr(dlg, "desktop"):
+				oldDesktop = dlg.desktop
+				readSkin(dlg, None, dlg.skinName, oldDesktop)
+				dlg.applySkin()
 
 
 enigma.eProfileWrite("Standby,PowerKey")

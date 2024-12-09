@@ -205,7 +205,9 @@ case $ret in
 		/sbin/reboot
 		;;
 	3)
-		ENIGMA_DEBUG_LVL="3"
+		DEBUG_LVL="3"
+		rm -fR /home/root/.cache/gstreamer-1.0
+		rm -f /tmp/.listen.camd.socket.ignore
 		;;
 	4)
 		/sbin/rmmod lcd
@@ -221,10 +223,15 @@ case $ret in
 		fi
 		;;
 	6)
-		ENIGMA_DEBUG_LVL="4"
+		DEBUG_LVL="4"
 		;;
 	7)
 		rm -R /etc/enigma2
+		;;
+	15)
+		rm -fR /home/root/.cache/gstreamer-1.0
+		rm -f /tmp/.listen.camd.socket.ignore
+		# /usr/bin/kodi
 		;;
 	16)
 		stbcheck=`cat /proc/stb/info/model`
