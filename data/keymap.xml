@@ -82,7 +82,7 @@
 	</map>
 
 	<map context="NavigationActions">
-		<key id="KEY_REWIND" mapto="first" flags="m" />
+		<key id="KEY_PREVIOUSSONG" mapto="top" flags="m" />
 		<key id="KEY_REWIND" mapto="top" flags="m" />
 		<key id="KEY_CHANNELUP" mapto="pageUp" flags="mr" />
 		<key id="KEY_UP" mapto="up" flags="mr" />
@@ -96,7 +96,7 @@
 		<key id="KEY_PAUSE" mapto="last" flags="m" /><!-- Was for text editing. -->
 		<key id="KEY_DOWN" mapto="down" flags="mr" />
 		<key id="KEY_CHANNELDOWN" mapto="pageDown" flags="mr" />
-		<key id="KEY_FASTFORWARD" mapto="bottom" flags="m" />
+		<key id="KEY_NEXTSONG" mapto="bottom" flags="m" />
 		<!--
 		<key id="KEY_FASTFORWARD" mapto="bottom" flags="m" />
 		-->
