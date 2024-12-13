@@ -546,10 +546,7 @@ def InitAVSwitch():
 			(pChoice("passthrough")),
 			(pChoice("multichannel")),
 			(pChoice("force_ac3")),
-			(pChoice("force_dts")),
-			(pChoice("use_hdmi_cacenter")),
-			(pChoice("wide")),
-			(pChoice("extrawide"))
+			(pChoice("force_dts"))
 		]
 		default = "downmix"
 
