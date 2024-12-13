@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 from sys import maxsize
 
 from enigma import eActionMap
@@ -323,7 +324,7 @@ class HelpableActionMap(ActionMap):
 		if isinstance(contexts, str):
 			contexts = [contexts]
 		actions = actions or {}
-		self.description = description
+		self.description = description or _(re.sub(r"(\w)([A-Z])([a-z])", r"\1 \2\3", contexts[0]))
 		actionDict = {}
 		for context in contexts:
 			actionList = []
