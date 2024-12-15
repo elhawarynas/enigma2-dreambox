@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-02 14:05+0100\n"
-"POT-Creation-Date: 2024-12-08 15:08+0100\n"
+"POT-Creation-Date: 2024-12-15 13:08+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: RAED - Fairbirb <rrrr53@hotmail.com>\n"
 "Language-Team: \n"
@@ -426,6 +426,9 @@ msgstr[5] "التحديثات المتوفرة."
 #, python-format
 msgid "%s%s(Default: %s)"
 msgstr ""
+
+msgid "'Ping' is used for detection device on this address."
+msgstr ".للكشف عن الجهاز على هذا العنوان 'Ping' يتم استخدام"
 
 msgid "(VU+ type)"
 msgstr ""
@@ -1395,8 +1398,8 @@ msgstr "معلومات أساسية"
 msgid "Basque"
 msgstr "الباسكي"
 
-msgid "Before sending the command to switch the TV to standby, the receiver tests if PC connected to TV is in standby. If it is not, the 'sourceinactive' command will be sent to the TV instead of the 'standby' command."
-msgstr "قبل إرسال الأمر لتحويل التلفزيون إلى وضع الاستعداد، يقوم جهاز الاستقبال باختبار ما إذا كان الكمبيوتر المتصل بالتلفزيون في وضع الاستعداد. إذا لم يكن كذلك، فسيتم إرسال الأمر \"المصدر غير نشط\" إلى التلفزيون بدلاً من الأمر 'تعليق'.\""
+msgid "Before sending the command to switch the TV to standby, the receiver can test if a device connected to the TV responds to a network 'ping'. If it does, instead of the 'standby' command the 'sourceinactive' command will be sent to the TV."
+msgstr ".إلى التلفزيون 'sourceinactive' سيتم إرسال الأمر 'standby' من الشبكة. إذا كان الأمر كذلك، فبدلاً من الأمر 'ping' قبل إرسال الأمر لتحويل التلفزيون إلى وضع الاستعداد، يمكن للمستقبل اختبار ما إذا كان الجهاز المتصل بالتلفزيون يستجيب لإشارة"
 
 msgid "Before sending the command to switch the TV to standby, the receiver tests if all the other devices plugged to TV are in standby. If they are not, the 'sourceinactive' command will be sent to the TV instead of the 'standby' command."
 msgstr "قبل إرسال الأمر بتبديل التلفزيون إلى وضع الاستعداد ، يختبر جهاز الاستقبال ما إذا كانت جميع الأجهزة الأخرى المتصلة بالتلفزيون في وضع الاستعداد. إذا لم يكن الأمر كذلك ، فسيتم إرسال الأمر 'صدر غير نشط' إلى التلفزيون بدلاً من أمر 'الاستعداد'"
@@ -2858,16 +2861,13 @@ msgstr "DVB-T وجهة جهاز الاستقبال البعيد الاحتياط
 msgid "Details for plugin: "
 msgstr " :تفاصيل الإضافات"
 
+#, fuzzy, python-format
+msgid "Detect box%s via network"
+msgstr "من خلال الشبكة %sاكتشاف الصندوق"
+
 #, fuzzy
-msgid "Detect PC before standby"
-msgstr "الاستعداد العميق"
-
-#, python-format
-msgid "Detect box%s via LAN"
-msgstr "عبر الشبكة المحلية %sاكتشاف الصندوق"
-
-msgid "Detect next boxes before standby"
-msgstr "كشف المربعات التالية قبل الاستعداد"
+msgid "Detect other boxes before standby"
+msgstr "اكتشاف الصناديق الأخرى قبل وضع الاستعداد"
 
 msgid "Detected NIMs:"
 msgstr ":الكشف عن التيونرات"
@@ -4055,8 +4055,8 @@ msgstr "المكان النهائي في"
 msgid "Following tasks will be done after you press OK!"
 msgstr "سيتم تنفيذ المهام التالية بعد الضغط على موافق!"
 
-msgid "For detection next receivers use ethernet LAN instead HDMI-CEC protocol."
-msgstr ".HDMI-CEC للكشف عن أجهزة الاستقبال التالية، استخدم شبكة شبكة إيثرنت محلية بدلاً من بروتوكول"
+msgid "For this box, the network connection can also be used for detection."
+msgstr "بالنسبة لهذا الصندوق، يمكن أيضًا استخدام اتصال الشبكة للكشف."
 
 msgid "Force legacy signal stats"
 msgstr "فرض إحصاءات الإشارات القديمة"
@@ -6187,6 +6187,9 @@ msgstr "فتح ضبط المؤالف "
 msgid "Open the movie list"
 msgstr "فتح قائمة الأفلام"
 
+msgid "OpenWebif is used for detection on box with this IP address."
+msgstr "للكشف عن الصندوق الذي يحمل عنوان الأيبي هذا OpenWebif يتم استخدام"
+
 msgid "Operating LED status in deep standby mode"
 msgstr "في وضع الاستعداد العميق LED حالة تشغيل"
 
@@ -6442,6 +6445,10 @@ msgstr "مساعد"
 #, fuzzy
 msgid "Pin Userbouquet"
 msgstr "باقات المستخدم"
+
+#, fuzzy
+msgid "Ping device before standby"
+msgstr "للجهاز قبل وضع الاستعداد ping إرسال إشارة"
 
 msgid "Pitcairn"
 msgstr "بيتكيرن"
@@ -6759,6 +6766,9 @@ msgstr "المنفذ د"
 
 msgid "Port of fallback remote receiver"
 msgstr "منفذ جهاز استقبال بعيد احتياطي"
+
+msgid "Port used by OpenWebif on tested box."
+msgstr ".على الصندوق الذي تم اختباره OpenWebif المنفذ المستخدم بواسطة"
 
 msgid "Portugal"
 msgstr "البرتغال"
