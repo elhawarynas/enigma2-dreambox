@@ -2,13 +2,15 @@
 from datetime import datetime, timezone, timedelta
 from json import loads
 from os.path import exists
-from re import search, S
+from re import compile, search, S
 from twisted.internet.reactor import callInThread
 from ssl import create_default_context, _create_unverified_context as SkipCertificateVerification
 from urllib.parse import unquote
 from urllib.request import build_opener, HTTPDigestAuthHandler, HTTPHandler, HTTPSHandler, HTTPPasswordMgrWithDefaultRealm
 from pathlib import Path
 from xml.etree.ElementTree import XML
+from ipaddress import ip_address
+from socket import getaddrinfo, gaierror
 
 # ENIGMA IMPORTS
 from enigma import eTimer
@@ -18,6 +20,7 @@ from Components.config import config
 from Components.ScrollLabel import ScrollLabel
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
+from Components.SystemInfo import BoxInfo
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Setup import Setup
@@ -35,52 +38,49 @@ class OSCamGlobals():
 	def openWebIF(self, part="status", label="", fmt="json", log=False):
 		udata = self.getUserData()
 		if isinstance(udata, str):
-			return False, None, None, udata.encode()
+			return False, None, None, None, udata.encode()
 		proto, ip, port, user, pwd, api, signstatus = udata
-		webifok, url, result = self.callApi(proto=proto, ip=ip, port=port, \
-						username=user, password=pwd, api=api, \
+		webifok, url, result = self.callApi(proto=proto, ip=ip, port=port,
+						username=user, password=pwd, api=api,
 						fmt=fmt, part=part, label=label, log=log)
 		return webifok, api, url, signstatus, result
 
 	def confPath(self):
-		conffile = ""
-		owebif = ipv6compiled = found = False
-		oport = opath = signstatus = data = error = file = url = None
-		for filename in ["oscam.version", "ncam.version"]:
-			conffile = filename.replace("version", "conf")
-			if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
-				file = "/tmp/.%s/%s" % (filename.split('.')[0], filename)
-				if exists(file):
-					data = Path(file).read_text()
-					found = True
-			else:  # Find and parse running oscam, ncam (api)
-				api = "%sapi" % filename.split('.')[0]
-				webifok, url, result = self.callApi(proto="https" if config.oscaminfo.usessl.value else "http", \
-									ip=str(config.oscaminfo.ip.value), \
-									port=str(config.oscaminfo.port.value), \
-									username=str(config.oscaminfo.username.value), \
-									password=str(config.oscaminfo.password.value), \
-									api=api, fmt="html", part="files", label=filename)
-				result = result.decode(encoding="latin-1", errors="ignore")
-				if webifok:
-					content = search(r'<file.*?>(.*?)</file>', result.replace("<![CDATA[", "").replace("]]>", ""), S)
-					if content:
-						data = content.group(1).strip()
-						found = True
-				else:
-					error = result
-			if found:
-				break
+		cam, api = "ncam", "api"
+		webif = ipv6compiled = False
+		port = signstatus = data = error = conffile = url = None
+		cam = cam if cam in BoxInfo.getItem("CurrentSoftcam").split("/")[-1].lower() else "oscam"
+		verfilename = "%s.version" % cam
+		api = "%s%s" % (cam, api)
+		if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
+			verfile = "/tmp/.%s/%s" % (verfilename.split('.')[0], verfilename)
+			if exists(verfile):
+				data = Path(verfile).read_text()
+		else:  # Find and parse running oscam, ncam (api)
+			webifok, url, result = self.callApi(proto="https" if config.oscaminfo.usessl.value else "http",
+												ip=str(config.oscaminfo.ip.value),
+												port=str(config.oscaminfo.port.value),
+												username=str(config.oscaminfo.username.value),
+												password=str(config.oscaminfo.password.value),
+												api=api, fmt="html", part="files", label=verfilename)
+			result = result.decode(encoding="latin-1", errors="ignore")
+			if webifok:
+				content = search(r'<file.*?>(.*?)</file>', result.replace("<![CDATA[", "").replace("]]>", ""), S)
+				if content:
+					data = content.group(1).strip()
+			else:
+				error = result
+
 		if data:
 			for i in data.splitlines():
 				if "web interface support:" in i.lower():
-					owebif = {"no": False, "yes": True}.get(i.split(":")[1].strip(), False)
+					webif = {"no": False, "yes": True}.get(i.split(":")[1].strip(), False)
 				elif "webifport:" in i.lower():
-					oport = i.split(":")[1].strip()
-					if oport == "0":
-						oport = None
+					port = i.split(":")[1].strip()
+					if port == "0":
+						port = None
 				elif "configdir:" in i.lower():
-					opath = i.split(":")[1].strip()
+					conffile = "%s%s" % (i.split(":")[1].strip(), verfilename.replace("version", "conf"))
 				elif "ipv6 support:" in i.lower():
 					ipv6compiled = {"no": False, "yes": True}.get(i.split(":")[1].strip())
 				elif "signature:" in i.lower():
@@ -90,50 +90,51 @@ class OSCamGlobals():
 				else:
 					continue
 		else:
-			error = "unexpected result from %s%s" % ((file or ""), (url or "")) if not error else error
-		return owebif, oport, opath, ipv6compiled, signstatus, conffile, error
+			error = "unexpected result from %s%s" % ((verfile or ""), (url or "")) if not error else error
+		return webif, port, api, ipv6compiled, signstatus, conffile, error
 
 	def getUserData(self):
-		webif, port, conf, ipv6compiled, signstatus, conffile, error = self.confPath()  # (True, 'http', '127.0.0.1', '8080', '/etc/tuxbox/config/oscam-trunk/', True, 'CN=...', 'oscam.conf', None)
-		conf = "%s%s" % ((conf or ""), (conffile or "oscam.conf"))
-		api = conffile.replace(".conf", "api")
-		proto, blocked = "http", False  # Assume that oscam webif is NOT blocking localhost, IPv6 is also configured if it is compiled in, and no user and password are required
-		user = pwd = None
-		ret = _("OSCam webif disabled") if not error else error
-		if webif and port is not None:  # oscam reports it got webif support and webif is running (Port != 0)
-			if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
-				if conf is not None and exists(conf):  # If we have a config file, we need to investigate it further
-					with open(conf) as data:
-						for i in data:
-							if "httpuser" in i.lower():
-								user = i.split("=")[1].strip()
-							elif "httppwd" in i.lower():
-								pwd = i.split("=")[1].strip()
-							elif "httpport" in i.lower():
-								port = i.split("=")[1].strip()
-								if port.startswith('+'):
-									proto = "https"
-									port = port.replace("+", "")
-							elif "httpallowed" in i.lower():
-								blocked = True  # Once we encounter a httpallowed statement, we have to assume oscam webif is blocking us ...
-								allowed = i.split("=")[1].strip()
-								if "::1" in allowed or "127.0.0.1" in allowed or "0.0.0.0-255.255.255.255" in allowed:
-									blocked = False  # ... until we find either 127.0.0.1 or ::1 in allowed list
-									ip = "::1" if ipv6compiled else "127.0.0.1"
-								if "::1" not in allowed:
-									ip = "127.0.0.1"
-			else:  #Use custom defined parameters
-				proto = proto="https" if config.oscaminfo.usessl.value else "http"
-				ip = str(config.oscaminfo.ip.value)
-				port = str(config.oscaminfo.port.value)
-				user = str(config.oscaminfo.username.value)
-				pwd = str(config.oscaminfo.password.value)
-			if not blocked:
-				ret = proto, ip, port, user, pwd, api, signstatus
+		ret = _("No system softcam configured!")
+		if BoxInfo.getItem("ShowOscamInfo"):
+			webif, port, api, ipv6compiled, signstatus, conffile, error = self.confPath()  # (True, 'http', '127.0.0.1', '8080', '/etc/tuxbox/config/oscam-trunk/', True, 'CN=...', 'oscam.conf', None)
+			proto, blocked = "http", False  # Assume that oscam webif is NOT blocking localhost, IPv6 is also configured if it is compiled in, and no user and password are required
+			user = pwd = None
+			conffile = "%s" % (conffile or "oscam.conf")
+			ret = _("OSCam webif disabled") if not error else error
+			if webif and port is not None:  # oscam reports it got webif support and webif is running (Port != 0)
+				if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
+					if conffile is not None and exists(conffile):  # If we have a config file, we need to investigate it further
+						with open(conffile) as data:
+							for i in data:
+								if "httpuser" in i.lower():
+									user = i.split("=")[1].strip()
+								elif "httppwd" in i.lower():
+									pwd = i.split("=")[1].strip()
+								elif "httpport" in i.lower():
+									port = i.split("=")[1].strip()
+									if port.startswith('+'):
+										proto = "https"
+										port = port.replace("+", "")
+								elif "httpallowed" in i.lower():
+									blocked = True  # Once we encounter a httpallowed statement, we have to assume oscam webif is blocking us ...
+									allowed = i.split("=")[1].strip()
+									if "::1" in allowed or "127.0.0.1" in allowed or "0.0.0.0-255.255.255.255" in allowed:
+										blocked = False  # ... until we find either 127.0.0.1 or ::1 in allowed list
+										ip = "::1" if ipv6compiled else "127.0.0.1"
+									if "::1" not in allowed:
+										ip = "127.0.0.1"
+				else:  #Use custom defined parameters
+					proto = proto = "https" if config.oscaminfo.usessl.value else "http"
+					ip = str(config.oscaminfo.ip.value)
+					port = str(config.oscaminfo.port.value)
+					user = str(config.oscaminfo.username.value)
+					pwd = str(config.oscaminfo.password.value)
+				if not blocked:
+					ret = proto, ip, port, user, pwd, api, signstatus
 		return ret
 
 	def callApi(self, proto="http", ip="127.0.0.1", port="83", username=None, password=None, api="oscamapi", fmt="json", part="status", label="", log=False):
-		webhandler = HTTPHandler if proto == "http" else HTTPSHandler(context=(create_default_context() if config.oscaminfo.verifycert.value else SkipCertificateVerification())) # NOSONAR silence S4830 + S5527
+		webhandler = HTTPHandler if proto == "http" else HTTPSHandler(context=(create_default_context() if config.oscaminfo.verifycert.value else SkipCertificateVerification()))  # NOSONAR silence S4830 + S5527
 		if part in ["status", "userstats"]:
 			style, appendix = ("html", "&appendlog=1") if log else (fmt, "")
 			url = "%s://%s:%s/%s.%s?part=status%s" % (proto, ip, port, api, style, appendix)  # e.g. http://127.0.0.1:8080/oscamapi.html?part=status&appendlog=1
@@ -152,7 +153,7 @@ class OSCamGlobals():
 			#print("[%s] DEBUG in module 'callApi': API call: %s" % (MODULE_NAME, url))
 			data = opener.open(url, timeout=5).read()
 			return True, url, data
-		except OSError as error:
+		except (OSError, UnicodeError) as error:
 			if hasattr(error, "reason"):
 				errmsg = str(error.reason)
 			elif hasattr(error, "errno"):
@@ -173,80 +174,7 @@ class OSCamGlobals():
 
 
 class OSCamInfo(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamInfo" position="center,center" size="1950,1080" backgroundColor="#10101010" title="NCam Information" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="15,15" size="1905,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Default</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,15" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%A</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,51" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%e. %B</convert>
-			</widget>
-			<widget source="buildinfos" render="Label" position="360,64" size="1200,40" font="Regular;30" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010"/>
-			<widget source="extrainfos" render="Label" position="15,102" size="1905,32" font="Regular;26" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010"/>
-			<widget source="timerinfos" render="Label" position="15,136" size="1905,34" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#10101010"/>
-			<!-- Server / Reader / Clients -->
-			<eLabel text="#" position="15,172" size="23,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Reader/User" position="40,172" size="173,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="AU" position="215,172" size="88,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Address" position="305,172" size="168,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Port" position="475,172" size="88,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Protocol" position="565,172" size="223,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="srvid:caid@provid" position="790,172" size="268,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Last Channel" position="1060,172" size="233,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="LB Value/Reader" position="1295,172" size="233,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Online\nIdle" position="1530,172" size="163,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<eLabel text="Status" position="1695,172" size="210,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
-			<widget source="outlist" render="Listbox" position="15,210" size="1890,600" backgroundColor="#10b3b3b3" enableWrapAround="1" scrollbarMode="showOnDemand" >
-				<convert type="TemplatedMultiContent">
-					{"template": [  # index 0 is backgroundcolor
-					MultiContentEntryText(pos=(0,0), size=(23,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # type
-					MultiContentEntryText(pos=(25,0), size=(173,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # Reader/User
-					MultiContentEntryText(pos=(200,0), size=(88,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=3),  # AU
-					MultiContentEntryText(pos=(290,0), size=(168,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=4),  # Adress
-					MultiContentEntryText(pos=(460,0), size=(88,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=5),  # Port
-					MultiContentEntryText(pos=(550,0), size=(223,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=6),  # Protocol
-					MultiContentEntryText(pos=(775,0), size=(268,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # srvid:caid@provid
-					MultiContentEntryText(pos=(1045,0), size=(233,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8),  # Last Channel
-					MultiContentEntryText(pos=(1280,0), size=(233,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=9),  # LB Value/Reader
-					MultiContentEntryText(pos=(1515,0), size=(163,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=10),  # Online+Idle
-					MultiContentEntryText(pos=(1680,0), size=(210,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=11)  # Status
-					], "fonts": [gFont("Regular",27)], "itemHeight":75
-					}
-				</convert>
-			</widget>
-			<widget name="logtext" position="15,812" size="1890,150" font="Regular;24" halign="left" valign="top" foregroundColor="#00000000" backgroundColor="#10ECEAF6" noWrap="0" scrollbarMode="showNever" />
-			<eLabel text="System Ram" position="15,964" size="171,42" font="Regular;27" halign="center" valign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
-			<widget source="total" render="Label" position="188,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="used" render="Label" position="418,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="free" render="Label" position="648,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="buffer" render="Label" position="878,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="NCam" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
-			<widget source="virtuell" render="Label" position="1235,964" size="338,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="resident" render="Label" position="1575,964" size="330,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel name="red" position="20,1010" size="10,65" backgroundColor="red" zPosition="1" />
-			<eLabel name="green" position="320,1010" size="10,65" backgroundColor="green" zPosition="1" />
-			<eLabel name="blue" position="920,1010" size="10,65" backgroundColor="blue" zPosition="1" />
-			<widget source="key_red" render="Label" position="40,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_green" render="Label" position="340,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_blue" render="Label" position="940,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_OK" render="Label" position="1185,1020" size="60,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_entitlements" render="Label" position="1260,1020" size="250,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_menu" render="Label" position="1530,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-			<widget source="key_exit" render="Label" position="1730,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>
-		"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamInfo" position="center,center" size="1950,1080" backgroundColor="#10101010" title="OScam Information" flags="wfNoBorder" resolution="1920,1080">
 			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
 			<widget source="Title" render="Label" position="15,15" size="1905,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
@@ -298,7 +226,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 			<widget source="used" render="Label" position="418,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="free" render="Label" position="648,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="buffer" render="Label" position="878,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="OScam" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
+			<widget source="camname" render="Label" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
 			<widget source="virtuell" render="Label" position="1235,964" size="338,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="resident" render="Label" position="1575,964" size="330,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<eLabel name="red" position="20,1010" size="10,65" backgroundColor="red" zPosition="1" />
@@ -334,6 +262,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 		self["used"] = StaticText()
 		self["free"] = StaticText()
 		self["buffer"] = StaticText()
+		self["camname"] = StaticText()
 		self["virtuell"] = StaticText()
 		self["resident"] = StaticText()
 		self["key_red"] = StaticText(_("Shutdown %s") % camname)
@@ -372,10 +301,10 @@ class OSCamInfo(Screen, OSCamGlobals):
 
 	def updateOScamData(self):
 		webifok, api, url, signstatus, result = self.openWebIF()
-		tag, camname = {"oscamapi": ("oscam", "OSCam"), "ncamapi": ("ncam", "NCam")}.get(api)
 		ctime = datetime.fromisoformat(datetime.now(timezone.utc).astimezone().isoformat())
 		currtime = "Protocol Time: %s - %s" % (ctime.strftime("%x"), ctime.strftime("%X"))
 		na = _("n/a")
+		tag, camname = {"oscamapi": ("oscam", "OSCam"), "ncamapi": ("ncam", "NCam"), None: (na, na)}.get(api)
 		if webifok and result:
 			json = loads(result).get(tag, {})
 			sysinfo = json.get("sysinfo", {})
@@ -439,8 +368,9 @@ class OSCamInfo(Screen, OSCamGlobals):
 			self["used"].setText("Used: %s" % sysinfo.get("mem_cur_used", na))
 			self["free"].setText("Free: %s" % sysinfo.get("mem_cur_free", na))
 			self["buffer"].setText("Buffer: %s" % sysinfo.get("mem_cur_buff", na))
-			self["virtuell"].setText("Virtuell memory: %s" % sysinfo.get(tag + "_vmsize", na))
-			self["resident"].setText("Resident Set: %s" % sysinfo.get(tag + "_rsssize", na))
+			self["camname"].setText("%s" % camname)
+			self["virtuell"].setText("Virtuell memory: %s" % sysinfo.get("%s_vmsize" % tag, na))
+			self["resident"].setText("Resident Set: %s" % sysinfo.get("%s_rsssize" % tag, na))
 			self["outlist"].updateList(outlist)
 			self.displayLog()
 		else:
@@ -994,16 +924,16 @@ class OSCamEntitleDetails(Screen, OSCamGlobals):
 		webifok, api, url, signstatus, result = self.openWebIF()  # read JSON-status
 		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.skinName = "OSCamEntitleDetails"
-		self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1])
 		entitlelen = len(entitlement)
+		self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1] if entitlelen else _("n/a"))
 		for idx in range(len(entitlement)):
 			if (idx + 1) < entitlelen:
 				self["label%s" % idx] = StaticText(entitlement[idx + 1])
-		self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)))
+		self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)) if entitlelen else _("n/a"))
 		self['ProvIDlist'].selectionEnabled(0)
-		self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)))
+		self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)) if entitlelen else _("n/a"))
 		self['Providerlist'].selectionEnabled(0)
-		self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)))
+		self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)) if entitlelen else _("n/a"))
 		self['Nodelist'].selectionEnabled(0)
 		self["key_exit"] = StaticText(_("Exit"))
 		self["actions"] = HelpableActionMap(self, ["OkCancelActions"], {
@@ -1069,7 +999,47 @@ class OSCamInfoLog(Screen, OSCamGlobals):
 
 class OSCamInfoSetup(Setup):
 	def __init__(self, session):
+		self.status = None
+		self.oldIP = config.oscaminfo.ip.value
+		self.hostValidator = compile("(\d*[a-zA-Z]+[\.]*\d*)+$")
 		Setup.__init__(self, session, setup="OSCamInfoSetup")
+
+	def selectionChanged(self):
+		Setup.selectionChanged(self)
+		self.validate()
+
+	def changedEntry(self):
+		Setup.changedEntry(self)
+		self.validate()
+
+	def validate(self):
+		footnote = None
+		if self.getCurrentItem() == config.oscaminfo.ip and self.oldIP != config.oscaminfo.ip.value:
+			try:
+				if not self.hostValidator.match(config.oscaminfo.ip.value):
+					ip_address(config.oscaminfo.ip.value)
+			except ValueError:
+				footnote = _("IP address is invalid!")
+			self.setFootnote(footnote)
+			self.status = footnote
+
+	def keySave(self):
+		def keySaveCallback(result):
+			Setup.keySave(self)
+
+		print("[%s] DEBUG in module 'keySave': %s - %s" % (MODULE_NAME, config.oscaminfo.ip.value, self.oldIP))
+		if config.oscaminfo.ip.value != self.oldIP:
+			try:
+				getaddrinfo(config.oscaminfo.ip.value, config.oscaminfo.port.value)
+				print("[%s] DEBUG in module 'keySave': getaddrinfo: %s" % (MODULE_NAME, "top"))
+				self.status = None
+			except gaierror:
+				self.status = _("Hostname cannot be resolved to IP address!")
+
+		if self.status:
+			self.session.openWithCallback(keySaveCallback, MessageBox, self.status, type=MessageBox.TYPE_WARNING)
+		else:
+			Setup.keySave(self)
 
 
 class OscamInfoMenu(OSCamInfo):
