@@ -21,11 +21,12 @@ from Components.ScrollLabel import ScrollLabel
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
 from Components.SystemInfo import BoxInfo
+from Components.Pixmap import Pixmap
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Setup import Setup
 from Tools.BoundFunction import boundFunction
-from Tools.Directories import fileExists
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN
 
 # GLOBALS
 MODULE_NAME = __name__.split(".")[-1]
@@ -49,7 +50,7 @@ class OSCamGlobals():
 		cam, api = "ncam", "api"
 		webif = ipv6compiled = False
 		port = signstatus = data = error = conffile = url = None
-		cam = cam if cam in BoxInfo.getItem("CurrentSoftcam").split("/")[-1].lower() else "oscam"
+		cam = cam if fileExists("/tmp/.ncam/ncam.version") else "oscam"
 		verfilename = "%s.version" % cam
 		api = "%s%s" % (cam, api)
 		if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
@@ -95,7 +96,7 @@ class OSCamGlobals():
 
 	def getUserData(self):
 		ret = _("No system softcam configured!")
-		if BoxInfo.getItem("ShowOscamInfo"):
+		if fileExists("/tmp/.ncam/ncam.version") or fileExists("/tmp/.oscam/oscam.version"):
 			webif, port, api, ipv6compiled, signstatus, conffile, error = self.confPath()  # (True, 'http', '127.0.0.1', '8080', '/etc/tuxbox/config/oscam-trunk/', True, 'CN=...', 'oscam.conf', None)
 			proto, blocked = "http", False  # Assume that oscam webif is NOT blocking localhost, IPv6 is also configured if it is compiled in, and no user and password are required
 			user = pwd = None
@@ -176,7 +177,7 @@ class OSCamGlobals():
 class OSCamInfo(Screen, OSCamGlobals):
 	skin = """
 		<screen name="OSCamInfo" position="center,center" size="1950,1080" backgroundColor="#10101010" title="OScam Information" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
 			<widget source="Title" render="Label" position="15,15" size="1905,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
 				<convert type="ClockToText">Default</convert>
@@ -253,6 +254,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.setTitle(_("%sInfo: Information") % camname)
 		self.rulist = []
+		self["logo"] = Pixmap()
 		self["buildinfos"] = StaticText()
 		self["extrainfos"] = StaticText()
 		self["timerinfos"] = StaticText()
@@ -286,6 +288,11 @@ class OSCamInfo(Screen, OSCamGlobals):
 		self.bgColors = parameters.get("OSCamInfoBGcolors", (0x10fcfce1, 0x10f1f6e6, 0x10e2e0ef))
 
 	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
 		webifok, api, url, signstatus, result = self.openWebIF()
 		tag = {"oscamapi": ("oscam"), "ncamapi": ("ncam")}.get(api)
 		self.showHideKeyOk()
@@ -448,105 +455,9 @@ class OSCamInfo(Screen, OSCamGlobals):
 
 
 class OSCamEntitlements(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamEntitlements" position="center,center" size="1920,1080" backgroundColor="#10101010" title="NCam Entitlements" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Default</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,15" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%A</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,51" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%e. %B</convert>
-			</widget>
-			<widget source="dheader0" render="Label" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Type
-			<widget source="dheader1" render="Label" position="105,105" size="103,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # CAID
-			<widget source="dheader2" render="Label" position="210,105" size="118,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Provid
-			<widget source="dheader3" render="Label" position="330,105" size="268,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # ID
-			<widget source="dheader4" render="Label" position="600,105" size="148,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Class
-			<widget source="dheader5" render="Label" position="750,105" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Start Date
-			<widget source="dheader6" render="Label" position="915,105" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Expire Date
-			<widget source="dheader7" render="Label" position="1080,105" size="825,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Name
-			<widget source="cheader0" render="Label" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # CAID
-			<widget source="cheader1" render="Label" position="105,105" size="208,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # System
-			<widget source="cheader2" render="Label" />  # Reshare (not used here)
-			<widget source="cheader3" render="Label" />  # Hop (not used here)
-			<widget source="cheader4" render="Label" />  # ShareID (not used here)
-			<widget source="cheader5" render="Label" />  # RemoteID (not used here)
-			<widget source="cheader6" render="Label" position="315,105" size="118,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # ProvIDs
-			<widget source="cheader7" render="Label" position="435,105" size="313,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Providers
-			<widget source="cheader8" render="Label" position="750,105" size="268,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Nodes
-			<widget source="cheader9" render="Label" position="1020,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Locals
-			<widget source="cheader10" render="Label" position="1110,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Count
-			<widget source="cheader11" render="Label" position="1200,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hop1
-			<widget source="cheader12" render="Label" position="1275,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hop2
-			<widget source="cheader13" render="Label" position="1350,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hopx
-			<widget source="cheader14" render="Label" position="1425,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Curr
-			<widget source="cheader15" render="Label" position="1500,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res0
-			<widget source="cheader16" render="Label" position="1575,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res1
-			<widget source="cheader17" render="Label" position="1650,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res2
-			<widget source="cheader18" render="Label" position="1725,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Resx
-			<widget source="cheader19" render="Label" position="1800,105" size="105,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Reshare
-			<parameters>
-				<parameter name="OSCamInfoBGcolors" value="0x10fef2e6, 0x10f0f4e5" />
-			</parameters>
-			<widget source="entitleslist" render="Listbox" position="15,165" size="1890,828" backgroundColor="#10b3b3b3" enableWrapAround="1" scrollbarMode="showOnDemand" >
-	  			<convert type="TemplatedMultiContent">
-					{"templates":  # index 0 is backgroundcolor
-		  				{	"default": (36, [
-							MultiContentEntryText(pos=(0,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # Type
-							MultiContentEntryText(pos=(90,0), size=(103,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # CAID
-							MultiContentEntryText(pos=(195,0), size=(118,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=3),  # Provid
-							MultiContentEntryText(pos=(315,0), size=(268,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=4),  # ID
-							MultiContentEntryText(pos=(585,0), size=(148,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=5),  # Class
-							MultiContentEntryText(pos=(735,0), size=(163,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=6),  # Start Date
-							MultiContentEntryText(pos=(900,0), size=(163,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # Expire Date
-							MultiContentEntryText(pos=(1065,0), size=(825,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8)  # Name
-							]),
-							"entitlements": (36, [  # index 3 to 6 (Reshare, Hop, ShareID, RemoteID) are not used here
-							MultiContentEntryText(pos=(0,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # Caid
-							MultiContentEntryText(pos=(90,0), size=(208,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # System
-							MultiContentEntryText(pos=(300,0), size=(118,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # ProvIDs
-							MultiContentEntryText(pos=(420,0), size=(313,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8),  # Providers
-							MultiContentEntryText(pos=(735,0), size=(268,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=9),  # Nodes
-							MultiContentEntryText(pos=(1005,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=10),  # Locals
-							MultiContentEntryText(pos=(1095,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=11),  # Count
-							MultiContentEntryText(pos=(1185,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=12),  # Hop1
-							MultiContentEntryText(pos=(1260,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=13),  # Hop2
-							MultiContentEntryText(pos=(1335,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=14),  # Hopx
-							MultiContentEntryText(pos=(1410,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=15),  # Curr
-							MultiContentEntryText(pos=(1485,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=16),  # Res0
-							MultiContentEntryText(pos=(1560,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=17),  # Res1
-							MultiContentEntryText(pos=(1635,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=18),  # Res2
-							MultiContentEntryText(pos=(1710,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=19),  # Resx
-							MultiContentEntryText(pos=(1785,0), size=(105,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=20)  # Reshare
-							])
-	  					},
-						"fonts": [gFont("Regular",27)], "itemHeight":36
-					}
-				</convert>
-			</widget>
-			<widget source="key_blue" render="Label" foregroundColor="blue" backgroundColor="blue" position="1150,1010" size="10,65" objectTypes="key_blue,StaticText">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_blue" render="Label" position="1170,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" objectTypes="key_blue,StaticText">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_OK" render="Label" position="1395,1020" size="60,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_detailed" render="Label" position="1470,1020" size="250,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_exit" render="Label" position="1730,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamEntitlements" position="center,center" size="1920,1080" backgroundColor="#10101010" title="OSCam Entitlements" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
 			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
 				<convert type="ClockToText">Default</convert>
@@ -655,6 +566,7 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 			self["dheader%s" % idx] = StaticText()
 		for idx in range(len(self.cheaders)):
 			self["cheader%s" % idx] = StaticText()
+		self["logo"] = Pixmap()
 		self["entitleslist"] = List([])
 		self["key_blue"] = StaticText()
 		self["key_OK"] = StaticText()
@@ -673,6 +585,11 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 			self.loop.start(config.oscaminfo.autoUpdate.value * 1000, False)
 
 	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
 		self.showHideBlue()
 		self.showHideKeyOk()
 		self["entitleslist"].onSelectionChanged.append(self.showHideKeyOk)
@@ -846,42 +763,9 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 
 
 class OSCamEntitleDetails(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamEntitleDetails" position="center,center" size="765,1080" backgroundColor="#10101010" title="Ncam EntitleDetails" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="105,15" size="660,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<eLabel text="CAID" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="System" position="105,105" size="178,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Reshare" position="285,105" size="118,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Hop" position="405,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="ShareID" position="480,105" size="133,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="RemoteID" position="615,105" size="135,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="label0" render="Label" position="15,165" size="88,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # CAID
-			<widget source="label1" render="Label" position="105,165" size="178,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # System
-			<widget source="label2" render="Label" position="285,165" size="118,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # Reshare
-			<widget source="label3" render="Label" position="405,165" size="73,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # Hop
-			<widget source="label4" render="Label" position="480,165" size="133,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # ShareID
-			<widget source="label5" render="Label" position="615,165" size="135,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # RemoteID
-			<eLabel text="ProvIDs" position="15,225" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="ProvIDlist" render="Listbox" position="15,285" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<eLabel text="Providers" position="15,485" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="Providerlist" render="Listbox" position="15,545" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<eLabel text="Nodes" position="15,745" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="Nodelist" render="Listbox" position="15,805" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<widget source="key_exit" render="Label" position="570,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>
-		"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamEntitleDetails" position="center,center" size="765,1080" backgroundColor="#10101010" title="OSCam EntitleDetails" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
 			<widget source="Title" render="Label" position="105,15" size="660,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<eLabel text="CAID" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<eLabel text="System" position="105,105" size="178,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
@@ -921,6 +805,7 @@ class OSCamEntitleDetails(Screen, OSCamGlobals):
 			return nlist
 
 		Screen.__init__(self, session)
+		self["logo"] = Pixmap()
 		webifok, api, url, signstatus, result = self.openWebIF()  # read JSON-status
 		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.skinName = "OSCamEntitleDetails"
@@ -940,6 +825,14 @@ class OSCamEntitleDetails(Screen, OSCamGlobals):
 			"ok": (self.close, _("Close the screen")),
 			"cancel": (self.close, _("Close the screen")),
 			}, prio=1, description=_("%sInfo Actions") % camname)
+		self.onLayoutFinish.append(self.onLayoutFinished)
+
+	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
 
 
 class OSCamInfoLog(Screen, OSCamGlobals):
