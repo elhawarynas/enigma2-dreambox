@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: enigma2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-10-02 14:05+0100\n"
-"POT-Creation-Date: 2024-12-15 13:08+0100\n"
+"POT-Creation-Date: 2024-12-18 13:25+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: RAED - Fairbirb <rrrr53@hotmail.com>\n"
 "Language-Team: \n"
@@ -1184,6 +1184,10 @@ msgstr "تعريف الصوت"
 msgid "Audio PID%s, codec & lang"
 msgstr "كود و لغة,PID%s صوت"
 
+#, fuzzy
+msgid "Audio Selection Actions"
+msgstr "إجراءات تحديد الصوت"
+
 msgid "Audio auto volume level"
 msgstr "مستوي الصوت التلقائي"
 
@@ -1787,6 +1791,18 @@ msgid "Channel Info"
 msgstr "معلومات القناة"
 
 #, fuzzy
+msgid "Channel Select Base Actions"
+msgstr "إجراءات أساسية لاختيار القناة"
+
+#, fuzzy
+msgid "Channel Select Edit Actions"
+msgstr "تحرير إجراءات تحديد القناة"
+
+#, fuzzy
+msgid "Channel SelectEPG Actions"
+msgstr "إجراءات دليل البرامج الإلكتروني لاختيار القناة"
+
+#, fuzzy
 msgid "Channel Selection"
 msgstr "إختيار القناة"
 
@@ -1900,6 +1916,10 @@ msgstr "اختر ما إذا كنت تريد البحث عن خدمات مجان
 msgid "Christmas Island"
 msgstr "جزيرة الكريسماس"
 
+#, fuzzy
+msgid "Ci Selection Actions"
+msgstr "حدد الاجراء"
+
 msgid "Circular LNB"
 msgstr "لاقط دائري"
 
@@ -1961,6 +1981,9 @@ msgstr "معدل ترميز الضغط المنخفض"
 msgid "Codec & lang%s"
 msgstr "%sترميز و لغة"
 
+msgid "Collapse"
+msgstr ""
+
 msgid "Collection name"
 msgstr "اسم المجموعة"
 
@@ -1972,6 +1995,10 @@ msgstr "كولومبيا"
 
 msgid "Color"
 msgstr "مساحة ألوان"
+
+#, fuzzy
+msgid "Color Actions"
+msgstr "حدد الاجراء"
 
 msgid "Color format"
 msgstr "تهئية الألوان"
@@ -2000,9 +2027,6 @@ msgstr "وحده النفاذ المشروط"
 msgid "Common Interface assignment"
 msgstr "تحديد وحدة النفاذ المشروط"
 
-msgid "Common Setup Actions"
-msgstr "حدد الاجراء"
-
 msgid "Communication"
 msgstr "إتصال"
 
@@ -2021,8 +2045,8 @@ msgstr "مركب (يسمح بمزج مسارات الصوت والجوانب)"
 msgid "Composition of the recording filenames"
 msgstr "تكوين أسماء التسجيلات"
 
-msgid "Compress"
-msgstr "مكتمل"
+msgid "Config List Actions"
+msgstr "قائمة إجراءات إعدادات"
 
 msgid "Config Scan Details"
 msgstr "تشكيل تفاصيل البحث"
@@ -2572,6 +2596,14 @@ msgstr "تخصيص المؤشر في قائمة القنوات"
 msgid "Cut"
 msgstr "قطع"
 
+#, fuzzy
+msgid "Cut List Editor Actions"
+msgstr "محرر قائمة القطع"
+
+#, fuzzy
+msgid "Cutlist Seek Actions"
+msgstr "محرر قائمة القطع"
+
 msgid "Cutlist editor"
 msgstr "محرر قائمة القطع"
 
@@ -2628,6 +2660,18 @@ msgstr "DVD حرق"
 
 msgid "DVD Menu"
 msgstr "قائمة"
+
+#, fuzzy
+msgid "DVD Player Actions"
+msgstr "مشغل الديفيدي"
+
+#, fuzzy
+msgid "DVD Title List"
+msgstr "قائمة عناوين الديفيدي"
+
+#, fuzzy
+msgid "DVD Toolbox"
+msgstr "أدوات مشغل الديفيدي"
 
 msgid "DVD data format"
 msgstr "صيغة بيانات الديفيدي"
@@ -2918,6 +2962,10 @@ msgstr "إزالة المحيط الرقمي"
 msgid "Direct playback of linked titles without menu"
 msgstr "عرض مباشر لعناوين مربوطه بدون قائمه"
 
+#, fuzzy
+msgid "Direction Actions"
+msgstr "حدد الاجراء"
+
 msgid "Directory"
 msgstr "الدليل"
 
@@ -3037,6 +3085,10 @@ msgid ""
 msgstr ""
 "هل تريد حقا التحقق من نظام الملفات ؟\n"
 "هذا قد يستغرق وقتا طويلا!"
+
+#, fuzzy
+msgid "Do you really want to clear this playlist?"
+msgstr "هل تريد فعلا مسح %s?"
 
 #, python-format
 msgid "Do you really want to delete %s?"
@@ -3240,6 +3292,10 @@ msgstr "يدخل"
 
 msgid "EPG"
 msgstr "دليل البرامج الإلكترونية"
+
+#, fuzzy
+msgid "EPG Select Actions"
+msgstr "حدد الاجراء"
 
 msgid "EPG language selection 1"
 msgstr "إختيار لغة دليل البرامج الإلكترونية الأولى"
@@ -3648,6 +3704,14 @@ msgstr "واجهة شبكة الانترنت"
 
 msgid "Ethiopia"
 msgstr "أثيوبيا"
+
+#, fuzzy
+msgid "Event View Actions"
+msgstr "قائمه عرض الحدث"
+
+#, fuzzy
+msgid "Event ViewEPG Actions"
+msgstr "قائمه عرض الحدث"
 
 msgid "Event font size (relative to skin size)"
 msgstr "حجم خط الحدث (بالنسبة لحجم السطح)"
@@ -4148,6 +4212,10 @@ msgstr "جميع أنواع الدقة"
 msgid "Fullbackup Images"
 msgstr "ضبط مؤالف التراجع"
 
+#, fuzzy
+msgid "Function Key Actions"
+msgstr "حدد الاجراء"
+
 msgid "Function of OK button"
 msgstr "وظيفة زر موافق"
 
@@ -4162,6 +4230,10 @@ msgstr "G"
 
 msgid "GB"
 msgstr "GB"
+
+#, fuzzy
+msgid "GMEPG Select Actions"
+msgstr "حدد الاجراء"
 
 msgid "GREEN"
 msgstr "أخضر"
@@ -4216,6 +4288,9 @@ msgstr "غانا"
 
 msgid "Gibraltar"
 msgstr "جبل طارق"
+
+msgid "Global Actions"
+msgstr ""
 
 msgid "Go down the list"
 msgstr "الانتقال إلى أخر القائمة"
@@ -4388,9 +4463,6 @@ msgstr "دعم مشاركة الملفات على الشبكة المحلية"
 msgid "HDx1/HD1xxx/HD5x0C/VS1x00/et7x00/et8500/et7000mini"
 msgstr "HDx1/HD1xxx/HD5x0C/VS1x00/et7x00/et8500/et7000mini"
 
-msgid "HELP"
-msgstr "مساعدة"
-
 msgid "HISTORY"
 msgstr "تاريخ"
 
@@ -4441,6 +4513,10 @@ msgstr "العبرية"
 
 msgid "Help"
 msgstr "مساعدة"
+
+#, fuzzy
+msgid "Help Actions"
+msgstr "حدد الاجراء"
 
 #, fuzzy
 msgid "Help Screen"
@@ -4523,6 +4599,10 @@ msgstr "هولي سي"
 
 msgid "Hotkey"
 msgstr "مفتاح التشغيل السريع"
+
+#, fuzzy
+msgid "Hotkey Actions"
+msgstr "مزيد من التعليم"
 
 msgid "Hotkey Panic"
 msgstr "Hotkey Panic"
@@ -4761,8 +4841,90 @@ msgstr "دليل البرامج الإلكترونية التخطيطية في �
 msgid "Info bar timeout"
 msgstr "وقت ظهور شريط المعلومات"
 
+#, fuzzy
+msgid "Infobar Actions"
+msgstr "إجراءات شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Audio Selection Actions"
+msgstr "إجراءات تحديد الصوت في شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Channel Selection"
+msgstr "شريط معلومات اختيار القناة"
+
+msgid "Infobar Cue Sheet Actions"
+msgstr "إجراءات ورقة شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Extensions"
+msgstr "ملحقات شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Instant Record"
+msgstr "شريط المعلومات سجل فوري"
+
+#, fuzzy
+msgid "Infobar Menu Actions"
+msgstr "إجراءات قائمة شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Movie List Actions"
+msgstr "قائمة أفلام شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar PiP Actions"
+msgstr "PiP إجراءات شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Rds Actions"
+msgstr "Rds إجراءات شريط المعلومات"
+
+msgid "Infobar Red Button Actions"
+msgstr "إجراءات الزر الأحمر في شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Seek Actions"
+msgstr "شريط المعلومات يسعى إلى الإجراءات"
+
+msgid "Infobar Show Hide Actions"
+msgstr "شريط المعلومات إظهار إخفاء الإجراءات"
+
+msgid "Infobar Subservice Quickzap Actions"
+msgstr "الفرعية لشريط المعلومات Quickzap إجراءات"
+
+#, fuzzy
+msgid "Infobar Subservice Selection Actions"
+msgstr "إجراءات اختيار الخدمة الفرعية لشريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Subtitle Selection Actions"
+msgstr "إجراءات اختيار الترجمة الفرعية لشريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Teletext Actions"
+msgstr "إجراءات شريط المعلومات للنصوص التليفزيونية"
+
+msgid "Infobar Timer Button Actions"
+msgstr "إجراءات زر مؤقت شريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Timeshift Actions"
+msgstr "إجراءات التبديل الزمني لشريط المعلومات"
+
+#, fuzzy
+msgid "Infobar Timeshift Activate Actions"
+msgstr "إجراءات تفعيل ميزة "التحويل الزمني لشريط المعلومات"."
+
+msgid "Infobar Vmode Button Actions"
+msgstr "إجراءات زر وضع شريط المعلومات"
+
 msgid "Infobar frontend data source"
 msgstr "مصدر بيانات الواجهة الأمامية في شريط المعلومات"
+
+#, fuzzy
+msgid "InfobarEPG Actions"
+msgstr "إجراءات شريط معلومات الدليل البرامج الإلكتروني"
 
 msgid "Information"
 msgstr "معلومات"
@@ -4809,6 +4971,16 @@ msgstr "الإدخال"
 msgid "Input "
 msgstr "الادخال "
 
+#, fuzzy
+msgid "Input Actions"
+msgstr "الادخال "
+
+msgid "Input Ascii Actions"
+msgstr ""
+
+msgid "Input Box Actions"
+msgstr ""
+
 msgid "Input Stream ID"
 msgstr "إدخال معرف التدفق"
 
@@ -4840,6 +5012,10 @@ msgstr "تثبيت إضافات محليه"
 
 msgid "Install picons on"
 msgstr "تثبيت الايقونات في"
+
+#, fuzzy
+msgid "Install plugin"
+msgstr "نثبيت"
 
 msgid "Installation has completed."
 msgstr "أكتمل الحساب"
@@ -5035,6 +5211,9 @@ msgstr "الأحداث الرئيسية"
 msgid "Keyboard"
 msgstr "لوحة المفاتيح"
 
+msgid "Keyboard Input Actions"
+msgstr "إجراءات إدخال لوحة المفاتيح"
+
 msgid "Keyboard data entry"
 msgstr "خريطة لوحة المفاتيح"
 
@@ -5210,6 +5389,13 @@ msgstr[3] ""
 msgstr[4] ""
 msgstr[5] ""
 
+#, fuzzy
+msgid "Listbox Actions"
+msgstr "قائمة الإجراءات"
+
+msgid "Listbox Help Menu Actions"
+msgstr "قائمة إجراءات تعليمات مربع القائمة"
+
 msgid "Listen to the radio..."
 msgstr "الاستماع إلى القنوات الإذاعية..."
 
@@ -5309,6 +5495,9 @@ msgstr "وسائط"
 
 msgid "MENU"
 msgstr "قائمة"
+
+msgid "Menu Actions"
+msgstr "إجراءات القائمة"
 
 msgid "Menu button function"
 msgstr "وظيفة زر القائمة"
@@ -5437,6 +5626,16 @@ msgstr "ربما السبب في أن تسجيل قيد التشغيل حالي�
 msgid "Mayotte"
 msgstr "مايوت"
 
+#, fuzzy
+msgid "Media Player Actions"
+msgstr "إجراءات مشغل الوسائط"
+
+msgid "Media Player Cue Sheet Actions"
+msgstr "إجراءات ورقة الإشارات الخاصة بمشغل الوسائط"
+
+msgid "Media Player Seek Actions"
+msgstr "إجراءات البحث في مشغل الوسائط"
+
 msgid "Media player"
 msgstr "مشغل الوسائط"
 
@@ -5486,6 +5685,10 @@ msgstr "الحد الأدنى للعمر %d سنوات"
 
 msgid "Minimum send interval"
 msgstr "الفاصل الزمني لإرسال الحد الأدنى"
+
+#, fuzzy
+msgid "Minute Input Actions"
+msgstr "إجراءات إدخال الدقيقة"
 
 msgid "Missing "
 msgstr "مفقود "
@@ -5641,6 +5844,14 @@ msgstr "انتقل إلى المكان في الفهرس"
 msgid "Movement"
 msgstr "الحركة"
 
+#, fuzzy
+msgid "Movie Player Actions"
+msgstr "أختيار الأفلام"
+
+#, fuzzy
+msgid "Movie Selection Actions"
+msgstr "حدد الاجراء"
+
 msgid "Movie list configuration"
 msgstr "حماية التكوين"
 
@@ -5667,6 +5878,9 @@ msgstr "تحريك غربا..."
 
 msgid "Mozambique"
 msgstr "موزمبيق"
+
+msgid "Msg Box Actions"
+msgstr ""
 
 msgid "Multi EPG"
 msgstr "دليل برنامح يومي متعدد"
@@ -5751,6 +5965,10 @@ msgstr "ناورو"
 
 msgid "Navigate up/down with UP/DOWN buttons and page up/down with LEFT/RIGHT. EXIT to return to the help screen. OK to perform the action described in the currently highlighted help."
 msgstr "يمكنك التنقل لأعلى/لأسفل باستخدام أزرار أعلى/تحت وللتنقل عبر الصفحات لأعلى/لأسفل باستخدام أزرار غادر/يمين. اضغط على مخرج للعودة إلى شاشة التعليمات. اضغط على نعم لتنفيذ الإجراء الموضح في التعليمات المميزة حاليًا."
+
+#, fuzzy
+msgid "Navigation Actions"
+msgstr "حدد الاجراء"
 
 msgid "Nepal"
 msgstr "نيبال"
@@ -6084,6 +6302,10 @@ msgstr "استمرار العرض"
 msgid "Now, use the contrast setting to turn up the brightness of the background as much as possible, but make sure that you can still see the difference between the two brightest levels of shades.If you have done that, press OK."
 msgstr "الان، استخدم إعدادات التباين لزيادة درجه إضاءة الخلفية إلى أعلى قيمة ممكنه ، لكن كن متأكدا انك لازلت تستطيع ان ترى الفرق بين مستويين من الإضاءة فى الظل . إذا انتهيت من ذلك ، أضغط موافق."
 
+#, fuzzy
+msgid "Number Actions"
+msgstr "مزيد من التعليم"
+
 msgid "Number of channels shown in channel selection list"
 msgstr "عرض أرقام القنوات في قائمة إختيار القنوات"
 
@@ -6126,6 +6348,10 @@ msgstr "لا يعمل"
 
 msgid "Offline decode delay (ms)"
 msgstr "ترميز التأخير غير متصل (جزء من الثانية)"
+
+#, fuzzy
+msgid "Ok Cancel Actions"
+msgstr "إختيار القناة"
 
 msgid "Oman"
 msgstr "عمان"
@@ -6422,6 +6648,10 @@ msgstr "بيرو"
 
 msgid "Philippines"
 msgstr "الفليبين"
+
+#, fuzzy
+msgid "PiP Setup Actions"
+msgstr "حدد الاجراء"
 
 msgid "PiP setup"
 msgstr "ضبط السكن"
@@ -6797,6 +7027,9 @@ msgstr "ضبط الموتور"
 msgid "Positioner setup log"
 msgstr "سجل ضبط النظام المتحرك"
 
+msgid "Power Key Actions"
+msgstr ""
+
 msgid "Power LED"
 msgstr "الأغلاق"
 
@@ -7138,6 +7371,10 @@ msgstr "قرص ذاكرة الوصول العشوائي"
 msgid "Random"
 msgstr "عشوائي"
 
+#, fuzzy
+msgid "Rass Interactive Actions"
+msgstr "مشاهدة شريط الاخبار التفاعلي..."
+
 #, python-format
 msgid "Rating defined by broadcaster - %d"
 msgstr "التصنيف المحدد بواسطة المذيع التلفزيوني - %d"
@@ -7356,6 +7593,10 @@ msgstr "إزالة العناصر من سلة المهملات بعد (أيام)
 
 msgid "Remove new found flag"
 msgstr "حذف العلامة الجديدة إن وجدت"
+
+#, fuzzy
+msgid "Remove plugin"
+msgstr "حذف البلج إنز"
 
 msgid "Remove plugins"
 msgstr "حذف الإضافة"
@@ -7720,6 +7961,9 @@ msgstr "خط طول القمر الصناعي:"
 
 msgid "Satellites"
 msgstr "أقمار صناعية"
+
+msgid "Satlist Shortcut Action"
+msgstr "اختصار قائمة الأقمار الصناعية"
 
 msgid "Sats"
 msgstr "أقمار"
@@ -8519,6 +8763,10 @@ msgstr ".يمكن أن تختلف الإعدادات لكل دليل على حد
 msgid "Setup"
 msgstr "الضبط"
 
+#, fuzzy
+msgid "Setup Actions"
+msgstr "إجراءات الإعداد"
+
 msgid "Setup hard disk"
 msgstr "إعداد القرص الصلب"
 
@@ -8548,6 +8796,10 @@ msgstr "Shift"
 
 msgid "Short filenames"
 msgstr "أسماء قصيرة"
+
+#, fuzzy
+msgid "Shortcut Actions"
+msgstr "إجراءات الاختصار"
 
 msgid "Show"
 msgstr "عرض سجل"
@@ -8919,6 +9171,10 @@ msgstr "تخطي الاختيار اتصال بالإنترنت (تعطيل تث
 msgid "Skip jumping to live TV while timeshifting with plugins"
 msgstr "تخطي القفز إلى البث التلفزيوني المباشر أثناء تغيير الوقت باستخدام المكونات الإضافية"
 
+#, fuzzy
+msgid "Sleep Timer Editor Actions"
+msgstr "إجراءات محرر مؤقت النوم"
+
 msgid "Sleep timer"
 msgstr "حذف المؤقت"
 
@@ -9167,6 +9423,9 @@ msgstr "حذف المؤقت"
 
 msgid "Standby / restart"
 msgstr "وضع الإستعداد / إعادة التشغيل"
+
+msgid "Standby Actions"
+msgstr "وضع الإستعداد"
 
 msgid "Standby LED"
 msgstr "إضاءة الاستعداد"
@@ -9638,6 +9897,9 @@ msgstr "طاجيكستان"
 msgid "Tanzania, United Republic of"
 msgstr "جمهورية تنزانيا, المتحدة"
 
+msgid "Teletext Actions"
+msgstr "إجراءات التليتيكست"
+
 msgid "Teletext subtitle color"
 msgstr "لون ترجمة القنوات"
 
@@ -9665,8 +9927,15 @@ msgstr "إختبار الشاشة"
 msgid "Testscreens that are helpfull to fine-tune your display"
 msgstr "الاختبارات التي تساعد علي ضبط الشاشة بشكل جيد"
 
-msgid "تشغيل عرض النص"
-msgstr ""
+#, fuzzy
+msgid "Text Edit Actions"
+msgstr "إجراءات تحرير النص"
+
+msgid "Text Entry Actions"
+msgstr "إجراءات إدخال النص"
+
+msgid "Text View On"
+msgstr "تشغيل عرض النص"
 
 msgid "Text color"
 msgstr "لون النص"
@@ -10155,6 +10424,10 @@ msgstr "منطقة الوقت"
 msgid "Timer"
 msgstr "المؤقت"
 
+#, fuzzy
+msgid "Timer Edit Actions"
+msgstr "إجراءات تحرير المؤقت"
+
 msgid "Timer Overview"
 msgstr "نظرة عامة على المؤقت التلقائي"
 
@@ -10440,6 +10713,10 @@ msgstr "حجم خطوة البحث عن التردد"
 
 msgid "Tuvalu"
 msgstr "توفالو"
+
+#, fuzzy
+msgid "Tv Radio Actions"
+msgstr "أعمال التلفزيون والإذاعة"
 
 msgid "Two"
 msgstr "اثنين"
@@ -10971,11 +11248,19 @@ msgstr "جزر فيرجين (البريطانية)"
 msgid "Virgin Islands (U.S.)"
 msgstr "جزر فيرجن (الولايات المتحدة)"
 
+#, fuzzy
+msgid "Virtual Key Board Actions"
+msgstr "إجراءات لوحة المفاتيح الافتراضية"
+
 msgid "Virtual KeyBoard Functions"
 msgstr "وظائف لوحة المفاتيح الافتراضية"
 
 msgid "Virtual KeyBoard Text:"
 msgstr ":نص لوحة المفاتيح الافتراضية"
+
+#, fuzzy
+msgid "Virtual Keyboard Actions"
+msgstr "إجراءات لوحة المفاتيح الافتراضية"
 
 msgid "Virtual keyboard"
 msgstr "لوحة مفاتيح الحروف بالترتيب"
@@ -11399,6 +11684,10 @@ msgstr ".عندما يستيقظ جهاز الاستقبال من وضع الا�
 msgid "Where to save temporary timeshift recordings?"
 msgstr "أين تحفظ تسجيلات التايم شفت المؤقتة؟"
 
+#, fuzzy
+msgid "Window Actions"
+msgstr "حدد الاجراء"
+
 msgid "Wireless LAN"
 msgstr "شبكة محليه لا سلكية"
 
@@ -11440,6 +11729,10 @@ msgstr ".LED أو إلغاء تنشيط LED باستخدام هذا الخيار
 
 msgid "Without popup"
 msgstr "دون المنبثقة"
+
+#, fuzzy
+msgid "Wizard Actions"
+msgstr "ضبط كلمة السر"
 
 msgid "Wizard setup"
 msgstr "ضبط كلمة السر"
