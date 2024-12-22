@@ -236,7 +236,7 @@ def InitUsageConfig():
 	config.usage.show_infobar_on_zap = ConfigYesNo(default=True)
 	config.usage.show_infobar_on_skip = ConfigYesNo(default=True)
 	config.usage.show_infobar_on_event_change = ConfigYesNo(default=False)
-	config.usage.show_second_infobar = ConfigSelection(default="0", choices=[("", _("None"))] + choicelist + [("EPG", _("EPG"))])
+	config.usage.show_second_infobar = ConfigSelection(default="0", choices=[("no", _("None"))] + choicelist + [("EPG", _("EPG"))])
 	config.usage.show_simple_second_infobar = ConfigYesNo(default=False)
 	config.usage.show_infobar_adds = ConfigYesNo(default=False)
 	config.usage.infobar_frontend_source = ConfigSelection(default="settings", choices=[("settings", _("Settings")), ("tuner", _("Tuner"))])
@@ -1068,7 +1068,7 @@ def InitUsageConfig():
 	config.usage.multiboot_order = ConfigYesNo(default=True)
 
 	config.usage.setupShowDefault = ConfigSelection(default="spaces", choices=[
-		("", _("Don't show default")),
+		("no", _("Don't show default")),
 		("spaces", _("Show default after description")),
 		("newline", _("Show default on new line"))
 	])
@@ -1660,11 +1660,11 @@ def InitUsageConfig():
 	config.subtitles.pango_subtitles_delay = ConfigSelection(default=0, choices=choiceList)
 	config.subtitles.pango_subtitles_delay.addNotifier(setPangoSubtitleDelay)
 
-	def setDVBSubtitleYellow(configElement):
-		eSubtitleSettings.setDVBSubtitleYellow(configElement.value)
+	def setDVBSubtitleColor(configElement):
+		eSubtitleSettings.setDVBSubtitleColor(configElement.value)
 
-	config.subtitles.dvb_subtitles_yellow = ConfigYesNo(default=False)
-	config.subtitles.dvb_subtitles_yellow.addNotifier(setDVBSubtitleYellow)
+	config.subtitles.dvb_subtitles_color = ConfigSelection(default="0", choices=[("0", _("Off")), ("1", _("Yellow")), ("2", _("Green")), ("3", _("Magenta")), ("4", _("Cyan"))])
+	config.subtitles.dvb_subtitles_color.addNotifier(setDVBSubtitleColor)
 
 	def setDVBSubtitleOriginalPosition(configElement):
 		eSubtitleSettings.setDVBSubtitleOriginalPosition(configElement.value)
@@ -1942,8 +1942,10 @@ def InitUsageConfig():
 	config.oscaminfo.userDataFromConf = ConfigYesNo(default=True)
 	config.oscaminfo.username = ConfigText(default="username", fixed_size=False, visible_width=12)
 	config.oscaminfo.password = ConfigPassword(default="password", fixed_size=False)
-	config.oscaminfo.ip = ConfigIP(default=[127, 0, 0, 1], auto_jump=True)
-	config.oscaminfo.port = ConfigInteger(default=16002, limits=(0, 65536))
+	config.oscaminfo.ip = ConfigText(default="127.0.0.1", fixed_size=False)
+	config.oscaminfo.port = ConfigInteger(default=83, limits=(0, 65536))
+	config.oscaminfo.usessl = ConfigYesNo(default=False)
+	config.oscaminfo.verifycert = ConfigYesNo(default=False)
 	choiceList = [
 		(0, _("Disabled"))
 	] + [(x, ngettext("%d Second", "%d Seconds", x) % x) for x in (2, 5, 10, 20, 30)] + [(x * 60, ngettext("%d Minute", "%d Minutes", x) % x) for x in (1, 2, 3)]

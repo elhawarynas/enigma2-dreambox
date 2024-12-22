@@ -15,9 +15,6 @@ from Screens.MessageBox import MessageBox
 from enigma import eTimer, eDVBFrontendParametersSatellite, eComponentScan, eDVBFrontendParametersTerrestrial, eDVBFrontendParametersCable, eConsoleAppContainer, eDVBResourceManager, eDVBFrontendParametersATSC
 
 
-MODEL = BoxInfo.getItem("model")
-
-
 def buildTerTransponder(frequency,
 		inversion=2, bandwidth=7000000, fechigh=6, feclow=6,
 		modulation=2, transmission=2, guard=4,
@@ -293,7 +290,7 @@ class CableTransponderSearchSupport:
 		except:
 			# older API
 			if nim_idx < 2:
-				if MODEL in ("dm500hd"):
+				if BoxInfo.getItem("model") == "dm500hd":
 					bus = 2
 				else:
 					bus = nim_idx

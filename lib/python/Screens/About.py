@@ -220,9 +220,10 @@ class CommitInfo(Screen):
 			("https://api.github.com/repos/fairbird/enigma2-dreambox/commits" + branch, "Enigma2", API_GITHUB),
 			("https://api.github.com/repos/fairbird/openpli-dreambox-oe-core/commits" + branch, "Openpli Oe Core", API_GITHUB),
 			("https://api.github.com/repos/openpli/enigma2-plugins/commits" + branch_e2plugins, "Enigma2 Plugins", API_GITHUB),
+			("https://api.github.com/repos/openpli/enigma2-binary-plugins/commits" + branch_e2plugins, "Enigma2 Binary Plugins", API_GITHUB),
 			("https://api.github.com/repos/oe-alliance/aio-grab/commits", "Aio Grab", API_GITHUB),
 			("https://api.github.com/repos/oe-alliance/XMLTV-Import/commits", "Plugin EPGImport", API_GITHUB),
-			("https://api.github.com/repos/littlesat/skin-PLiHD/commits", "Skin PLi HD", API_GITHUB),
+			("https://api.github.com/repos/fairbird/skin-PLiHD/commits", "Skin PLi HD", API_GITHUB),
 			("https://api.github.com/repos/E2OpenPlugins/e2openplugin-OpenWebif/commits", "OpenWebif", API_GITHUB),
 			("https://gitlab.openpli.org/api/v4/projects/5/repository/commits", "Hans settings", API_GITLAB)
 		]

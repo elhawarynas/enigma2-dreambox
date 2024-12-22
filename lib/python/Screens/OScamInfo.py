@@ -2,12 +2,15 @@
 from datetime import datetime, timezone, timedelta
 from json import loads
 from os.path import exists
-from re import search, S
+from re import compile
 from twisted.internet.reactor import callInThread
-from ssl import _create_unverified_context as SkipCertificateVerification
+from ssl import create_default_context, _create_unverified_context as SkipCertificateVerification
 from urllib.parse import unquote
-from urllib.request import build_opener, install_opener, urlopen, HTTPDigestAuthHandler, HTTPHandler, HTTPPasswordMgrWithDefaultRealm, Request
-from xml.etree.ElementTree import XML
+from urllib.request import build_opener, HTTPDigestAuthHandler, HTTPHandler, HTTPSHandler, HTTPPasswordMgrWithDefaultRealm
+from pathlib import Path
+from xml.etree.ElementTree import XML, ParseError
+from ipaddress import ip_address
+from socket import getaddrinfo, gaierror
 
 # ENIGMA IMPORTS
 from enigma import eTimer
@@ -17,28 +20,16 @@ from Components.config import config
 from Components.ScrollLabel import ScrollLabel
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
+from Components.SystemInfo import BoxInfo
+from Components.Pixmap import Pixmap
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.Setup import Setup
 from Tools.BoundFunction import boundFunction
-from Tools.Directories import fileExists
+from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN
 
 # GLOBALS
 MODULE_NAME = __name__.split(".")[-1]
-
-NAMEBIN = ""
-NAMEBIN2 = ""
-def check_NAMEBIN():
-	NAMEBIN = "oscam"
-	if fileExists("/tmp/.ncam/ncam.version"):
-		NAMEBIN = "ncam"
-	return NAMEBIN
-
-def check_NAMEBIN2():
-	NAMEBIN2 = "OScam"
-	if fileExists("/tmp/.ncam/ncam.version"):
-		NAMEBIN2 = "Ncam"
-	return NAMEBIN2	
 
 
 class OSCamGlobals():
@@ -46,190 +37,152 @@ class OSCamGlobals():
 		pass
 
 	def openWebIF(self, part="status", label="", fmt="json", log=False):
-		proto, api, ctx = "http", "oscamapi", None
-		if config.oscaminfo.userDataFromConf.value:
-			udata = self.getUserData()
-			if isinstance(udata, str):
-				return False, udata.encode()
-			username, password, port, ipaccess, api = udata
-			ip = "::1" if ipaccess == "yes" else "127.0.0.1"
+		udata = self.getUserData()
+		if isinstance(udata, str):
+			return False, None, None, None, udata.encode()
+		proto, ip, port, user, pwd, api, signstatus = udata
+		webifok, url, result = self.callApi(proto=proto, ip=ip, port=port,
+						username=user, password=pwd, api=api,
+						fmt=fmt, part=part, label=label, log=log)
+		return webifok, api, url, signstatus, result
+
+	def confPath(self):
+		cam, api = "ncam", "api"
+		webif = ipv6compiled = False
+		port = signstatus = data = error = conffile = url = verfile = None
+		cam = cam if fileExists("/tmp/.ncam/ncam.version") else "oscam"
+		verfilename = "%s.version" % cam
+		api = "%s%s" % (cam, api)
+		if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
+			verfile = "/tmp/.%s/%s" % (verfilename.split('.')[0], verfilename)
+			if exists(verfile):
+				data = Path(verfile).read_text()
+		else:  # Find and parse running oscam, ncam (api)
+			webifok, url, result = self.callApi(proto="https" if config.oscaminfo.usessl.value else "http",
+												ip=str(config.oscaminfo.ip.value),
+												port=str(config.oscaminfo.port.value),
+												username=str(config.oscaminfo.username.value),
+												password=str(config.oscaminfo.password.value),
+												api=api, fmt="html", part="files", label=verfilename)
+			result = result.decode(encoding="latin-1", errors="ignore")
+			if webifok:
+				try:
+					xml = XML(result).find("file")
+					data = xml.text.strip() if xml is not None else None
+				except ParseError:
+					pass
+			else:
+				error = result
+
+		if data:
+			for i in data.splitlines():
+				if "web interface support:" in i.lower():
+					webif = {"no": False, "yes": True}.get(i.split(":")[1].strip(), False)
+				elif "webifport:" in i.lower():
+					port = i.split(":")[1].strip()
+					if port == "0":
+						port = None
+				elif "configdir:" in i.lower():
+					conffile = "%s%s" % (i.split(":")[1].strip(), verfilename.replace("version", "conf"))
+				elif "ipv6 support:" in i.lower():
+					ipv6compiled = {"no": False, "yes": True}.get(i.split(":")[1].strip())
+				elif "signature:" in i.lower():
+					signstatus = i.split(":")[1].strip()
+				elif "subject:" in i.lower():
+					signstatus = "%s (%s)" % (i.split(":")[1].strip(), signstatus)
+				else:
+					continue
 		else:
-			ip = ".".join("%d" % d for d in config.oscaminfo.ip.value)
-			port = str(config.oscaminfo.port.value)
-			username = str(config.oscaminfo.username.value)
-			password = str(config.oscaminfo.password.value)
-		if port.startswith('+'):
-			proto = "https"
-			port.replace("+", "")
-			ctx = SkipCertificateVerification() # NOSONAR silence S4830 + S5527
-		url = ""
+			error = "unexpected result from %s%s" % ((verfile or ""), (url or "")) if not error else error
+		return webif, port, api, ipv6compiled, signstatus, conffile, error
+
+	def getUserData(self):
+		ret = _("No system softcam configured!")
+		if fileExists("/tmp/.ncam/ncam.version") or fileExists("/tmp/.oscam/oscam.version"):
+			webif, port, api, ipv6compiled, signstatus, conffile, error = self.confPath()  # (True, 'http', '127.0.0.1', '8080', '/etc/tuxbox/config/oscam-trunk/', True, 'CN=...', 'oscam.conf', None)
+			proto, blocked = "http", False  # Assume that oscam webif is NOT blocking localhost, IPv6 is also configured if it is compiled in, and no user and password are required
+			user = pwd = None
+			conffile = "%s" % (conffile or "oscam.conf")
+			ret = _("OSCam webif disabled") if not error else error
+			if webif and port is not None:  # oscam reports it got webif support and webif is running (Port != 0)
+				if config.oscaminfo.userDataFromConf.value:  # Find and parse running oscam, ncam (auto)
+					if conffile is not None and exists(conffile):  # If we have a config file, we need to investigate it further
+						with open(conffile) as data:
+							for i in data:
+								if "httpuser" in i.lower():
+									user = i.split("=")[1].strip()
+								elif "httppwd" in i.lower():
+									pwd = i.split("=")[1].strip()
+								elif "httpport" in i.lower():
+									port = i.split("=")[1].strip()
+									if port.startswith('+'):
+										proto = "https"
+										port = port.replace("+", "")
+								elif "httpallowed" in i.lower():
+									blocked = True  # Once we encounter a httpallowed statement, we have to assume oscam webif is blocking us ...
+									allowed = i.split("=")[1].strip()
+									if "::1" in allowed or "127.0.0.1" in allowed or "0.0.0.0-255.255.255.255" in allowed:
+										blocked = False  # ... until we find either 127.0.0.1 or ::1 in allowed list
+										ip = "::1" if ipv6compiled else "127.0.0.1"
+									if "::1" not in allowed:
+										ip = "127.0.0.1"
+				else:  #Use custom defined parameters
+					proto = proto = "https" if config.oscaminfo.usessl.value else "http"
+					ip = str(config.oscaminfo.ip.value)
+					port = str(config.oscaminfo.port.value)
+					user = str(config.oscaminfo.username.value)
+					pwd = str(config.oscaminfo.password.value)
+				if not blocked:
+					ret = proto, ip, port, user, pwd, api, signstatus
+		return ret
+
+	def callApi(self, proto="http", ip="127.0.0.1", port="83", username=None, password=None, api="oscamapi", fmt="json", part="status", label="", log=False):
+		webhandler = HTTPHandler if proto == "http" else HTTPSHandler(context=(create_default_context() if config.oscaminfo.verifycert.value else SkipCertificateVerification()))  # NOSONAR silence S4830 + S5527
 		if part in ["status", "userstats"]:
 			style, appendix = ("html", "&appendlog=1") if log else (fmt, "")
 			url = "%s://%s:%s/%s.%s?part=status%s" % (proto, ip, port, api, style, appendix)  # e.g. http://127.0.0.1:8080/oscamapi.html?part=status&appendlog=1
 		elif part in ["restart", "shutdown"]:
 			url = "%s://%s:%s/shutdown.html?action=%s" % (proto, ip, port, part)  # e.g. http://127.0.0.1:8080//shutdown.html?action=restart or ...?action=shutdown
 		elif label:
-			url = "%s://%s:%s/%s.%s?part=%s&label=%s" % (proto, ip, port, api, fmt, part, label)  # e.g. http://127.0.0.1:8080/oscamapi.json?part=entitlement&label=MyReader
-		opener = build_opener(HTTPHandler)
+			key = "file" if part == "files" else "label"                                            # e.g. http://127.0.0.1:8080/oscamapi.html?part=files&file=oscam.conf
+			url = "%s://%s:%s/%s.%s?part=%s&%s=%s" % (proto, ip, port, api, fmt, part, key, label)  # e.g. http://127.0.0.1:8080/oscamapi.json?part=entitlement&label=MyReader
+		opener = build_opener(webhandler)
 		if username and password and url:
 			pwman = HTTPPasswordMgrWithDefaultRealm()
 			pwman.add_password(None, url, username, password)
-			handlers = HTTPDigestAuthHandler(pwman)
-			opener = build_opener(HTTPHandler, handlers)
-			install_opener(opener)
-		request = Request(url)
+			authhandler = HTTPDigestAuthHandler(pwman)
+			opener = build_opener(webhandler, authhandler)
 		try:
-			data = urlopen(request, timeout=10, context=ctx).read()
-			return True, data
-		except OSError as error:
+			#print("[%s] DEBUG in module 'callApi': API call: %s" % (MODULE_NAME, url))
+			data = opener.open(url, timeout=5).read()
+			return True, url, data
+		except (OSError, UnicodeError) as error:
 			if hasattr(error, "reason"):
 				errmsg = str(error.reason)
 			elif hasattr(error, "errno"):
 				errmsg = str(error.errno)
 			else:
 				errmsg = str(error)
-			print("[%s] ERROR in module 'openWebIF': Unexpected error accessing WebIF: %s" % (MODULE_NAME, errmsg))
-			return False, errmsg.encode(encoding="latin-1", errors="ignore")
-
-	def confPath(self):
-		owebif, oport, opath, ipcompiled, conffile = False, None, None, False, ""
-		for file in ["/tmp/.ncam/ncam.version", "/tmp/.oscam/oscam.version"]:  # Find and parse running oscam/ncam
-			if exists(file):
-				with open(file) as data:
-					conffile = file.split('/')[-1].replace("version", "conf")
-					for i in data:
-						if "web interface support:" in i.lower():
-							owebif = {"no": False, "yes": True}.get(i.split(":")[1].strip(), False)
-						elif "webifport:" in i.lower():
-							oport = i.split(":")[1].strip()
-							if oport == "0":
-								oport = None
-						elif "configdir:" in i.lower():
-							opath = i.split(":")[1].strip()
-						elif "ipv6 support:" in i.lower():
-							ipcompiled = {"no": False, "yes": True}.get(i.split(":")[1].strip())
-						else:
-							continue
-		return owebif, oport, opath, ipcompiled, conffile
-
-	def getUserData(self):
-		NAMEBIN = check_NAMEBIN()
-		NAMEBIN2 = check_NAMEBIN2()
-		webif, port, conf, ipcompiled, conffile = self.confPath()  # (True, '8080', '/etc/tuxbox/config/oscam-trunk/', True, 'oscam/ncam.conf')
-		conf = "%s%s" % ((conf or ""), (conffile or "%s.conf" % NAMEBIN))
-		api = conffile.replace(".conf", "api")
-		blocked = False  # Assume that oscam/ncam webif is NOT blocking localhost, IPv6 is also configured if it is compiled in, and no user and password are required
-		ipconfigured = ipcompiled
-		user = pwd = None
-		ret = _("%s webif disabled") % NAMEBIN2
-		if webif and port is not None:  # oscam/ncam reports it got webif support and webif is running (Port != 0)
-			if conf is not None and exists(conf):  # If we have a config file, we need to investigate it further
-				with open(conf) as data:
-					for i in data:
-						if "httpuser" in i.lower():
-							user = i.split("=")[1].strip()
-						elif "httppwd" in i.lower():
-							pwd = i.split("=")[1].strip()
-						elif "httpport" in i.lower():
-							port = i.split("=")[1].strip()
-						elif "httpallowed" in i.lower():
-							blocked = True  # Once we encounter a httpallowed statement, we have to assume oscam/ncam webif is blocking us ...
-							allowed = i.split("=")[1].strip()
-							if "::1" in allowed or "127.0.0.1" in allowed or "0.0.0.0-255.255.255.255" in allowed:
-								blocked = False  # ... until we find either 127.0.0.1 or ::1 in allowed list
-							if "::1" not in allowed:
-								ipconfigured = False
-			if not blocked:
-				ret = user, pwd, port, ipconfigured, api
-		return ret
+			print("[%s] ERROR in module 'callApi': Unexpected error accessing WebIF: %s" % (MODULE_NAME, errmsg))
+			return False, url, errmsg.encode(encoding="latin-1", errors="ignore")
 
 	def updateLog(self):
-		webifok, result = self.openWebIF(log=True)
-		result = result.decode(encoding="latin-1", errors="ignore")
+		webifok, api, url, signstatus, result = self.openWebIF(log=True)
+		ret, result = False, result.decode(encoding="latin-1", errors="ignore")
 		if webifok:
-			log = search(r'<log>(.*?)</log>', result.replace("<![CDATA[", "").replace("]]>", ""), S)
-			return True, log.group(1).strip() if log else "<no log found>"
-		else:
-			return False, result
+			try:
+				xml = XML(result).find("log")
+				ret, result = True, xml.text.strip() if xml is not None else "<no log found>"
+			except ParseError:
+				pass
+		return ret, result
 
 
 class OSCamInfo(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamInfo" position="center,center" size="1950,1080" backgroundColor="#10101010" title="NCam Information" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Default</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,15" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%A</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,51" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%e. %B</convert>
-			</widget>
-			<widget source="buildinfos" render="Label" position="480,66" size="990,40" font="Regular;30" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010" />
-			<widget source="timerinfos" render="Label" position="15,99" size="1920,40" font="Regular;30" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<!-- Server / Reader / Clients -->
-			<eLabel text="#" position="15,150" size="23,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Reader/User" position="40,150" size="173,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="AU" position="215,150" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Address" position="305,150" size="168,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Port" position="475,150" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Protocol" position="565,150" size="223,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="srvid:caid@provid" position="790,150" size="268,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Last Channel" position="1060,150" size="233,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="LB Value/Reader" position="1295,150" size="233,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Online\nIdle" position="1530,150" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Status" position="1695,150" size="210,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="outlist" render="Listbox" position="15,210" size="1890,600" backgroundColor="#10b3b3b3" enableWrapAround="1" scrollbarMode="showOnDemand" >
-				<convert type="TemplatedMultiContent">
-					{"template": [  # index 0 is backgroundcolor
-					MultiContentEntryText(pos=(0,0), size=(23,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # type
-					MultiContentEntryText(pos=(25,0), size=(173,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # Reader/User
-					MultiContentEntryText(pos=(200,0), size=(88,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=3),  # AU
-					MultiContentEntryText(pos=(290,0), size=(168,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=4),  # Adress
-					MultiContentEntryText(pos=(460,0), size=(88,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=5),  # Port
-					MultiContentEntryText(pos=(550,0), size=(223,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=6),  # Protocol
-					MultiContentEntryText(pos=(775,0), size=(268,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # srvid:caid@provid
-					MultiContentEntryText(pos=(1045,0), size=(233,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8),  # Last Channel
-					MultiContentEntryText(pos=(1280,0), size=(233,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=9),  # LB Value/Reader
-					MultiContentEntryText(pos=(1515,0), size=(163,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=10),  # Online+Idle
-					MultiContentEntryText(pos=(1680,0), size=(210,75), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=11)  # Status
-					], "fonts": [gFont("Regular",27)], "itemHeight":75
-					}
-				</convert>
-			</widget>
-			<widget name="logtext" position="15,812" size="1890,150" font="Regular;24" halign="left" valign="top" foregroundColor="#00000000" backgroundColor="#10ECEAF6" noWrap="0" scrollbarMode="showNever" />
-			<eLabel text="System Ram" position="15,964" size="171,42" font="Regular;27" halign="center" valign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
-			<widget source="total" render="Label" position="188,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="used" render="Label" position="418,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="free" render="Label" position="648,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="buffer" render="Label" position="878,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="NCam" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
-			<widget source="virtuell" render="Label" position="1235,964" size="338,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="resident" render="Label" position="1575,964" size="330,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel name="red" position="20,1010" size="10,65" backgroundColor="red" zPosition="1" />
-			<eLabel name="green" position="320,1010" size="10,65" backgroundColor="green" zPosition="1" />
-			<eLabel name="blue" position="920,1010" size="10,65" backgroundColor="blue" zPosition="1" />
-			<widget source="key_red" render="Label" position="40,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_green" render="Label" position="340,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_blue" render="Label" position="940,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" />
-			<widget source="key_OK" render="Label" position="1185,1020" size="60,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_entitlements" render="Label" position="1260,1020" size="250,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_menu" render="Label" position="1530,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-			<widget source="key_exit" render="Label" position="1730,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>
-		"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamInfo" position="center,center" size="1950,1080" backgroundColor="#10101010" title="OScam Information" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
+			<widget source="Title" render="Label" position="15,15" size="1905,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
 				<convert type="ClockToText">Default</convert>
 			</widget>
@@ -239,20 +192,21 @@ class OSCamInfo(Screen, OSCamGlobals):
 			<widget source="global.CurrentTime" render="Label" position="1470,51" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
 				<convert type="ClockToText">Format:%e. %B</convert>
 			</widget>
-			<widget source="buildinfos" render="Label" position="480,66" size="990,40" font="Regular;30" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010" />
-			<widget source="timerinfos" render="Label" position="15,99" size="1920,40" font="Regular;30" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
+			<widget source="buildinfos" render="Label" position="360,64" size="1200,40" font="Regular;30" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010"/>
+			<widget source="extrainfos" render="Label" position="15,102" size="1905,32" font="Regular;26" halign="center" valign="center" foregroundColor="#092CBDF" backgroundColor="#10101010"/>
+			<widget source="timerinfos" render="Label" position="15,136" size="1905,34" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#10101010"/>
 			<!-- Server / Reader / Clients -->
-			<eLabel text="#" position="15,150" size="23,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Reader/User" position="40,150" size="173,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="AU" position="215,150" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Address" position="305,150" size="168,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Port" position="475,150" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Protocol" position="565,150" size="223,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="srvid:caid@provid" position="790,150" size="268,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Last Channel" position="1060,150" size="233,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="LB Value/Reader" position="1295,150" size="233,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Online\nIdle" position="1530,150" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Status" position="1695,150" size="210,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
+			<eLabel text="#" position="15,172" size="23,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Reader/User" position="40,172" size="173,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="AU" position="215,172" size="88,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Address" position="305,172" size="168,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Port" position="475,172" size="88,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Protocol" position="565,172" size="223,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="srvid:caid@provid" position="790,172" size="268,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Last Channel" position="1060,172" size="233,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="LB Value/Reader" position="1295,172" size="233,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Online\nIdle" position="1530,172" size="163,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
+			<eLabel text="Status" position="1695,172" size="210,36" font="Regular;27" halign="center" valign="center" foregroundColor="white" backgroundColor="#105a5a5a" />
 			<widget source="outlist" render="Listbox" position="15,210" size="1890,600" backgroundColor="#10b3b3b3" enableWrapAround="1" scrollbarMode="showOnDemand" >
 				<convert type="TemplatedMultiContent">
 					{"template": [  # index 0 is backgroundcolor
@@ -277,7 +231,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 			<widget source="used" render="Label" position="418,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="free" render="Label" position="648,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="buffer" render="Label" position="878,964" size="228,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="OScam" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
+			<widget source="camname" render="Label" position="1108,964" size="125,42" font="Regular;27" valign="center" halign="center" foregroundColor="#FFFF30" backgroundColor="#105a5a5a" />
 			<widget source="virtuell" render="Label" position="1235,964" size="338,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<widget source="resident" render="Label" position="1575,964" size="330,42" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<eLabel name="red" position="20,1010" size="10,65" backgroundColor="red" zPosition="1" />
@@ -299,12 +253,14 @@ class OSCamInfo(Screen, OSCamGlobals):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		NAMEBIN = check_NAMEBIN()
-		NAMEBIN2 = check_NAMEBIN2()
 		self.skinName = "OSCamInfo"
-		self.setTitle(_("%sInfo: Information") % NAMEBIN2)
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
+		self.setTitle(_("%sInfo: Information") % camname)
 		self.rulist = []
+		self["logo"] = Pixmap()
 		self["buildinfos"] = StaticText()
+		self["extrainfos"] = StaticText()
 		self["timerinfos"] = StaticText()
 		self["outlist"] = List([])
 		self["logtext"] = ScrollLabel(_("<no log found>"))
@@ -312,10 +268,11 @@ class OSCamInfo(Screen, OSCamGlobals):
 		self["used"] = StaticText()
 		self["free"] = StaticText()
 		self["buffer"] = StaticText()
+		self["camname"] = StaticText()
 		self["virtuell"] = StaticText()
 		self["resident"] = StaticText()
-		self["key_red"] = StaticText(_("Shutdown %s") % NAMEBIN2)
-		self["key_green"] = StaticText(_("Restart %s") % NAMEBIN2)
+		self["key_red"] = StaticText(_("Shutdown %s") % camname)
+		self["key_green"] = StaticText(_("Restart %s") % camname)
 		self["key_blue"] = StaticText(_("Show Log"))
 		self["key_OK"] = StaticText()
 		self["key_entitlements"] = StaticText()
@@ -325,49 +282,55 @@ class OSCamInfo(Screen, OSCamGlobals):
 			"ok": (self.keyOk, _("Show details")),
 			"cancel": (self.exit, _("Close the screen")),
 			"menu": (self.keyMenu, _("Open Settings")),
-			"red": (self.keyShutdown, _("Shutdown %s") % NAMEBIN2),
-			"green": (self.keyRestart, _("Restart %s") % NAMEBIN2),
+			"red": (self.keyShutdown, _("Shutdown %s") % camname),
+			"green": (self.keyRestart, _("Restart %s") % camname),
 			"blue": (self.keyBlue, _("Open Log"))
-			}, prio=1, description=_("%sInfo Actions") % NAMEBIN2)
+			}, prio=1, description=_("%sInfo Actions") % camname)
 		self.loop = eTimer()
 		self.loop.callback.append(self.updateOScamData)
 		self.onLayoutFinish.append(self.onLayoutFinished)
 		self.bgColors = parameters.get("OSCamInfoBGcolors", (0x10fcfce1, 0x10f1f6e6, 0x10e2e0ef))
 
 	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
+		webifok, api, url, signstatus, result = self.openWebIF()
+		tag = {"oscamapi": ("oscam"), "ncamapi": ("ncam")}.get(api)
 		self.showHideKeyOk()
 		self["outlist"].onSelectionChanged.append(self.showHideKeyOk)
 		if config.oscaminfo.userDataFromConf.value and self.confPath()[0] is None:
 			config.oscaminfo.userDataFromConf.value = False
 			config.oscaminfo.userDataFromConf.save()
-			self["buildinfos"].setText(_("File %s.conf not found.\nPlease enter username/password manually.") % NAMEBIN)
+			self["extrainfos"].setText(_("File %s.conf not found.\nPlease enter username/password manually.") % tag)
 		else:
 			callInThread(self.updateOScamData)
 			if config.oscaminfo.autoUpdate.value:
 				self.loop.start(config.oscaminfo.autoUpdate.value * 1000, False)
 
 	def updateOScamData(self):
-		NAMEBIN2 = check_NAMEBIN2()
-		webifok, result = self.openWebIF()
+		webifok, api, url, signstatus, result = self.openWebIF()
 		ctime = datetime.fromisoformat(datetime.now(timezone.utc).astimezone().isoformat())
 		currtime = "Protocol Time: %s - %s" % (ctime.strftime("%x"), ctime.strftime("%X"))
 		na = _("n/a")
+		tag, camname = {"oscamapi": ("oscam", "OSCam"), "ncamapi": ("ncam", "NCam"), None: (na, na)}.get(api)
 		if webifok and result:
-			if fileExists("/tmp/.ncam/ncam.version"):
-				oscam = loads(result).get("ncam", {})
-			else:
-				oscam = loads(result).get("oscam", {})
-			sysinfo = oscam.get("sysinfo", {})
+			json = loads(result).get(tag, {})
+			sysinfo = json.get("sysinfo", {})
 			# GENERAL INFOS (timing, memory usage)
-			stime_iso = oscam.get("starttime", None)
+			stime_iso = json.get("starttime", None)
 			starttime = "Start Time: %s - %s" % (datetime.fromisoformat(stime_iso).strftime("%x"), datetime.fromisoformat(stime_iso).strftime("%X")) if stime_iso else (na, na)
-			runtime = "%s Run Time: %s" % (NAMEBIN2, oscam.get("runtime", na))
-			version = "%s: %s" % (NAMEBIN2, oscam.get("version", na))
-			srvidfile = "srvidfile: %s" % oscam.get("srvidfile", na)
+			runtime = "%s Run Time: %s" % (camname, json.get("runtime", na))
+			version = "%s: %s" % (camname, json.get("version", na))
+			srvidfile = "srvidfile: %s" % json.get("srvidfile", na)
+			url = "%s: %s//%s" % (_("Host"), url.split('/')[0], url.split('/')[2])
+			signed = "%s: %s" % (_("Signed by"), signstatus) if signstatus else ""
 			rulist = []
 			# MAIN INFOS {'s': 'server', 'h': 'http', 'p': 'proxy', 'r': 'reader', 'c': 'cccam_ext', 'x': 'cache exchange', 'm': 'monitor'}
 			outlist = []
-			for client in oscam.get("status", {}).get("client", []):
+			for client in json.get("status", {}).get("client", []):
 				connection = client.get("connection", {})
 				request = client.get("request", {})
 				times = client.get("times", {})
@@ -375,15 +338,11 @@ class OSCamInfo(Screen, OSCamGlobals):
 				readeruser = unquote({"s": "root", "h": "root", "p": client.get("rname_enc", ""), "r": client.get("rname_enc", ""), "c": client.get("name_enc", "")}.get(currtype, na))
 				au = {"-1": "ON", "0": "OFF", "1": "ACTIVE"}.get(client.get("au", na), na)
 				ip = connection.get("ip", "")
-				if ip and config.misc.softcam_hideServerName.value:
-					ip = "\u2022" * len(ip)
 				port = connection.get("port", na)
 				protocol = "\n".join(client.get("protocol", "").split(" "))
 				srinfo = "%s:%s@%s" % (request.get("srvid", na), request.get("caid", na), request.get("provid", na))
 				chinfo = "%s\n%s" % (request.get("chname", na), request.get("chprovider", na))
 				answered = request.get("answered", "")
-				if answered and config.misc.softcam_hideServerName.value:
-					answered = "\u2022" * len(answered)
 				ecmtime = request.get("ecmtime", na)
 				lbvaluereader = "%s (%s ms)" % (answered, ecmtime) if answered and ecmtime else request.get("lbvalue", na)
 				login_iso = times.get("login")
@@ -413,23 +372,22 @@ class OSCamInfo(Screen, OSCamGlobals):
 			outlist.sort(key=lambda val: {"s": 0, "h": 1, "p": 2, "r": 3, "c": 4, "a": 5}[val[1]])  # sort according column 'client type' by customized sort order
 			rulist.sort(key=lambda val: {"s": 0, "h": 1, "p": 2, "r": 3, "c": 4, "a": 5}[val[0]])  # sort according column 'client type' by customized sort order
 			self.rulist = rulist
-			self["buildinfos"].setText("%s | %s" % (version, srvidfile))
+			self["buildinfos"].setText("%s | %s | %s" % (version, srvidfile, url))
+			self["extrainfos"].setText("%s" % signed)
 			self["timerinfos"].setText("%s | %s | %s" % (currtime, starttime, runtime))
 			self["total"].setText("Total: %s" % sysinfo.get("mem_cur_total", na))
 			self["used"].setText("Used: %s" % sysinfo.get("mem_cur_used", na))
 			self["free"].setText("Free: %s" % sysinfo.get("mem_cur_free", na))
 			self["buffer"].setText("Buffer: %s" % sysinfo.get("mem_cur_buff", na))
-			if fileExists("/tmp/.ncam/ncam.version"):
-				self["virtuell"].setText("Virtuell memory: %s" % sysinfo.get("ncam_vmsize", na))
-				self["resident"].setText("Resident Set: %s" % sysinfo.get("ncam_rsssize", na))
-			else:
-				self["virtuell"].setText("Virtuell memory: %s" % sysinfo.get("oscam_vmsize", na))
-				self["resident"].setText("Resident Set: %s" % sysinfo.get("oscam_rsssize", na))
+			self["camname"].setText("%s" % camname)
+			self["virtuell"].setText("Virtuell memory: %s" % sysinfo.get("%s_vmsize" % tag, na))
+			self["resident"].setText("Resident Set: %s" % sysinfo.get("%s_rsssize" % tag, na))
 			self["outlist"].updateList(outlist)
 			self.displayLog()
 		else:
 			self.loop.stop()
-			self["buildinfos"].setText(_("Unexpected error accessing WebIF: %s") % result.decode(encoding="latin-1", errors="ignore"))
+			self["buildinfos"].setText(url)
+			self["extrainfos"].setText(_("Unexpected error accessing WebIF: %s") % result.decode(encoding="latin-1", errors="ignore"))
 			self["timerinfos"].setText(currtime)  # set at least one element just for having the attribute 'activeComponents'
 
 	def strf_delta(self, td):  # converts deltatime-format in hours (e.g. '2 days, 01:00' in '49:00:00')
@@ -445,7 +403,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 			self["logtext"].moveBottom()
 		else:
 			self.loop.stop()
-			self["buildinfos"].setText(_("Unexpected error accessing WebIF: %s") % result)
+			self["extrainfos"].setText(_("Unexpected error accessing WebIF: %s") % result)
 
 	def showHideKeyOk(self):
 		idx = self["outlist"].getSelectedIndex()
@@ -474,10 +432,14 @@ class OSCamInfo(Screen, OSCamGlobals):
 		self.session.openWithCallback(self.menuCallback, OSCamInfoSetup)
 
 	def keyShutdown(self):
-		self.session.openWithCallback(boundFunction(self.msgboxCB, "shutdown"), MessageBox, _("Do you really want to shut down %s?\n\nATTENTION: To reactivate %s, a complete receiver restart must be carried out!" % (NAMEBIN2, NAMEBIN2)), MessageBox.TYPE_YESNO, timeout=10, default=False)
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
+		self.session.openWithCallback(boundFunction(self.msgboxCB, "shutdown"), MessageBox, _("Do you really want to shut down %s?\n\nATTENTION: To reactivate %s, a complete receiver restart must be carried out!" % (camname, camname)), MessageBox.TYPE_YESNO, timeout=10, default=False)
 
 	def keyRestart(self):
-		self.session.openWithCallback(boundFunction(self.msgboxCB, "restart"), MessageBox, _("Do you really want to restart %s?\n\nHINT: This will take about 5 seconds!" % NAMEBIN2), MessageBox.TYPE_YESNO, timeout=10, default=False)
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
+		self.session.openWithCallback(boundFunction(self.msgboxCB, "restart"), MessageBox, _("Do you really want to restart %s?\n\nHINT: This will take about 5 seconds!" % camname), MessageBox.TYPE_YESNO, timeout=10, default=False)
 
 	def keyBlue(self):
 		self.loop.stop()
@@ -486,7 +448,7 @@ class OSCamInfo(Screen, OSCamGlobals):
 	def msgboxCB(self, action, answer):
 		if answer:
 			self.loop.stop()
-			webifok, result = self.openWebIF(part=action)
+			webifok, api, url, signstatus, result = self.openWebIF(part=action)
 			if not webifok:
 				print("[%s] ERROR in module 'msgboxCB': %s" % (MODULE_NAME, "Unexpected error accessing WebIF: %s" % result))
 				self.session.open(MessageBox, _("Unexpected error accessing WebIF: %s" % result), MessageBox.TYPE_ERROR, timeout=3, close_on_any_key=True)
@@ -497,105 +459,9 @@ class OSCamInfo(Screen, OSCamGlobals):
 
 
 class OSCamEntitlements(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamEntitlements" position="center,center" size="1920,1080" backgroundColor="#10101010" title="NCam Entitlements" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Default</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,15" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%A</convert>
-			</widget>
-			<widget source="global.CurrentTime" render="Label" position="1470,51" size="240,40" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
-				<convert type="ClockToText">Format:%e. %B</convert>
-			</widget>
-			<widget source="dheader0" render="Label" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Type
-			<widget source="dheader1" render="Label" position="105,105" size="103,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # CAID
-			<widget source="dheader2" render="Label" position="210,105" size="118,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Provid
-			<widget source="dheader3" render="Label" position="330,105" size="268,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # ID
-			<widget source="dheader4" render="Label" position="600,105" size="148,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Class
-			<widget source="dheader5" render="Label" position="750,105" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Start Date
-			<widget source="dheader6" render="Label" position="915,105" size="163,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Expire Date
-			<widget source="dheader7" render="Label" position="1080,105" size="825,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Name
-			<widget source="cheader0" render="Label" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # CAID
-			<widget source="cheader1" render="Label" position="105,105" size="208,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # System
-			<widget source="cheader2" render="Label" />  # Reshare (not used here)
-			<widget source="cheader3" render="Label" />  # Hop (not used here)
-			<widget source="cheader4" render="Label" />  # ShareID (not used here)
-			<widget source="cheader5" render="Label" />  # RemoteID (not used here)
-			<widget source="cheader6" render="Label" position="315,105" size="118,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # ProvIDs
-			<widget source="cheader7" render="Label" position="435,105" size="313,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Providers
-			<widget source="cheader8" render="Label" position="750,105" size="268,58" font="Regular;27" halign="left" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Nodes
-			<widget source="cheader9" render="Label" position="1020,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Locals
-			<widget source="cheader10" render="Label" position="1110,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Count
-			<widget source="cheader11" render="Label" position="1200,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hop1
-			<widget source="cheader12" render="Label" position="1275,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hop2
-			<widget source="cheader13" render="Label" position="1350,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Hopx
-			<widget source="cheader14" render="Label" position="1425,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Curr
-			<widget source="cheader15" render="Label" position="1500,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res0
-			<widget source="cheader16" render="Label" position="1575,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res1
-			<widget source="cheader17" render="Label" position="1650,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Res2
-			<widget source="cheader18" render="Label" position="1725,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Resx
-			<widget source="cheader19" render="Label" position="1800,105" size="105,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />  # Reshare
-			<parameters>
-				<parameter name="OSCamInfoBGcolors" value="0x10fef2e6, 0x10f0f4e5" />
-			</parameters>
-			<widget source="entitleslist" render="Listbox" position="15,165" size="1890,828" backgroundColor="#10b3b3b3" enableWrapAround="1" scrollbarMode="showOnDemand" >
-	  			<convert type="TemplatedMultiContent">
-					{"templates":  # index 0 is backgroundcolor
-		  				{	"default": (36, [
-							MultiContentEntryText(pos=(0,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # Type
-							MultiContentEntryText(pos=(90,0), size=(103,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # CAID
-							MultiContentEntryText(pos=(195,0), size=(118,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=3),  # Provid
-							MultiContentEntryText(pos=(315,0), size=(268,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=4),  # ID
-							MultiContentEntryText(pos=(585,0), size=(148,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=5),  # Class
-							MultiContentEntryText(pos=(735,0), size=(163,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=6),  # Start Date
-							MultiContentEntryText(pos=(900,0), size=(163,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # Expire Date
-							MultiContentEntryText(pos=(1065,0), size=(825,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER|RT_WRAP, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8)  # Name
-							]),
-							"entitlements": (36, [  # index 3 to 6 (Reshare, Hop, ShareID, RemoteID) are not used here
-							MultiContentEntryText(pos=(0,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=1),  # Caid
-							MultiContentEntryText(pos=(90,0), size=(208,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=2),  # System
-							MultiContentEntryText(pos=(300,0), size=(118,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=7),  # ProvIDs
-							MultiContentEntryText(pos=(420,0), size=(313,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=8),  # Providers
-							MultiContentEntryText(pos=(735,0), size=(268,36), font=0, flags=RT_HALIGN_LEFT|RT_VALIGN_CENTER|RT_ELLIPSIS, color=0x000000, backcolor=MultiContentTemplateColor(0), text=9),  # Nodes
-							MultiContentEntryText(pos=(1005,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=10),  # Locals
-							MultiContentEntryText(pos=(1095,0), size=(88,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=11),  # Count
-							MultiContentEntryText(pos=(1185,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=12),  # Hop1
-							MultiContentEntryText(pos=(1260,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=13),  # Hop2
-							MultiContentEntryText(pos=(1335,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=14),  # Hopx
-							MultiContentEntryText(pos=(1410,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=15),  # Curr
-							MultiContentEntryText(pos=(1485,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=16),  # Res0
-							MultiContentEntryText(pos=(1560,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=17),  # Res1
-							MultiContentEntryText(pos=(1635,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=18),  # Res2
-							MultiContentEntryText(pos=(1710,0), size=(73,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=19),  # Resx
-							MultiContentEntryText(pos=(1785,0), size=(105,36), font=0, flags=RT_HALIGN_CENTER|RT_VALIGN_CENTER, color=0x000000, backcolor=MultiContentTemplateColor(0), text=20)  # Reshare
-							])
-	  					},
-						"fonts": [gFont("Regular",27)], "itemHeight":36
-					}
-				</convert>
-			</widget>
-			<widget source="key_blue" render="Label" foregroundColor="blue" backgroundColor="blue" position="1150,1010" size="10,65" objectTypes="key_blue,StaticText">
-                <convert type="ConditionalShowHide" />
-            </widget>
-            <widget source="key_blue" render="Label" position="1170,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" objectTypes="key_blue,StaticText">
-                <convert type="ConditionalShowHide" />
-            </widget>			
-			<widget source="key_OK" render="Label" position="1395,1020" size="60,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-            </widget>			
-			<widget source="key_detailed" render="Label" position="1470,1020" size="250,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff">
-				<convert type="ConditionalShowHide" />
-            </widget>			
-			<widget source="key_exit" render="Label" position="1730,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamEntitlements" position="center,center" size="1920,1080" backgroundColor="#10101010" title="OSCam Entitlements" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
 			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<widget source="global.CurrentTime" render="Label" position="1710,15" size="210,90" font="Regular;75" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
 				<convert type="ClockToText">Default</convert>
@@ -674,27 +540,27 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 				</convert>
 			</widget>
 			<widget source="key_blue" render="Label" foregroundColor="blue" backgroundColor="blue" position="1150,1010" size="10,65" objectTypes="key_blue,StaticText">
-                <convert type="ConditionalShowHide" />
-            </widget>
-            <widget source="key_blue" render="Label" position="1170,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" objectTypes="key_blue,StaticText">
-                <convert type="ConditionalShowHide" />
-            </widget>			
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_blue" render="Label" position="1170,1020" size="380,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff" objectTypes="key_blue,StaticText">
+				<convert type="ConditionalShowHide" />
+			</widget>
 			<widget source="key_OK" render="Label" position="1395,1020" size="60,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff">
 				<convert type="ConditionalShowHide" />
-            </widget>			
+			</widget>
 			<widget source="key_detailed" render="Label" position="1470,1020" size="250,42" font="Regular;30" halign="left" valign="center" foregroundColor="#00ffffff">
 				<convert type="ConditionalShowHide" />
-            </widget>			
+			</widget>
 			<widget source="key_exit" render="Label" position="1730,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
 		</screen>"""
 
 	def __init__(self, session, readeruser):
 		self.readeruser = readeruser
-		NAMEBIN = check_NAMEBIN()
-		NAMEBIN2 = check_NAMEBIN2()
 		Screen.__init__(self, session)
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.skinName = "OSCamEntitlements"
-		self.setTitle(_("%sInfo: Entitlements for '%s'") % (NAMEBIN2, self.readeruser))
+		self.setTitle(_("%samInfo: Entitlements for '%s'") % (camname, self.readeruser))
 		self.dheaders = ["type", "CAID", "Provid", "ID", "Class", "Start Date", "Expire Date", "Name"]
 		self.cheaders = ["CAID", "System", "Reshare", "Hop", "ShareID", "RemoteID", "ProvIDs", "Providers", "Nodes", "Locals", "Count", "Hop1", "Hop2", "Hopx", "Curr", "Res0", "Res1", "Res2", "Resx", "Reshare"]
 		self.showall = False
@@ -704,6 +570,7 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 			self["dheader%s" % idx] = StaticText()
 		for idx in range(len(self.cheaders)):
 			self["cheader%s" % idx] = StaticText()
+		self["logo"] = Pixmap()
 		self["entitleslist"] = List([])
 		self["key_blue"] = StaticText()
 		self["key_OK"] = StaticText()
@@ -713,7 +580,7 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 			"ok": (self.keyOk, _("Show all details")),
 			"cancel": (self.exit, _("Close the screen")),
 			"blue": (self.keyBlue, _("Show all"))
-			}, prio=1, description=_("%sInfo Actions") % NAMEBIN2)
+			}, prio=1, description=_("%sInfo Actions") % camname)
 		self.onLayoutFinish.append(self.onLayoutFinished)
 		self.bgColors = parameters.get("OSCamInfoBGcolors", (0x10fcfce1, 0x10f1f6e6, 0x10e2e0ef))
 		self.loop = eTimer()
@@ -722,6 +589,11 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 			self.loop.start(config.oscaminfo.autoUpdate.value * 1000, False)
 
 	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
 		self.showHideBlue()
 		self.showHideKeyOk()
 		self["entitleslist"].onSelectionChanged.append(self.showHideKeyOk)
@@ -733,6 +605,8 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 		callInThread(self.updateEntitlements)
 
 	def updateEntitlements(self):
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		entitleslist = self.getJSONentitlements()
 		if entitleslist:
 			self["entitleslist"].style = "default"
@@ -747,7 +621,7 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 					self["entitleslist"].style = "entitlements"
 					self.show_cheaders()
 		self["entitleslist"].updateList(entitleslist)
-		self.setTitle(_("%sInfo: %s Entitlements for '%s'") % (NAMEBIN2, len(entitleslist), self.readeruser))
+		self.setTitle(_("%sInfo: %s Entitlements for '%s'") % (camname, len(entitleslist), self.readeruser))
 		self.entitleslist = entitleslist
 		self.showHideBlue()
 		self.showHideKeyOk()
@@ -756,12 +630,10 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 
 	def getJSONentitlements(self):
 		entitleslist = []
-		webifok, result = self.openWebIF(part="entitlement", label=self.readeruser)  # read JSON-entitlements
+		webifok, api, url, signstatus, result = self.openWebIF(part="entitlement", label=self.readeruser)  # read JSON-entitlements
+		tag = {"oscamapi": ("oscam"), "ncamapi": ("ncam")}.get(api)
 		if webifok and result:
-			if fileExists("/tmp/.ncam/ncam.version"):
-				entitlements = loads(result).get("ncam", {}).get("entitlements", [])
-			else:
-				entitlements = loads(result).get("oscam", {}).get("entitlements", [])
+			entitlements = loads(result).get(tag, {}).get("entitlements", [])
 			if entitlements:
 				bgcoloridx = 0
 				na = _("n/a")
@@ -781,12 +653,10 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 
 	def getJSONstats(self):
 		entitleslist = []
-		webifok, result = self.openWebIF()  # read JSON-status
+		webifok, api, url, signstatus, result = self.openWebIF()  # read JSON-status
+		tag = {"oscamapi": ("oscam"), "ncamapi": ("ncam")}.get(api)
 		if webifok and result:
-			if fileExists("/tmp/.ncam/ncam.version"):
-				self.clients = loads(result).get("ncam", {}).get("status", {}).get("client", [])
-			else:
-				self.clients = loads(result).get("oscam", {}).get("status", {}).get("client", [])
+			self.clients = loads(result).get(tag, {}).get("status", {}).get("client", [])
 			bgcoloridx = 0
 			na = _("n/a")
 			for client in self.clients:
@@ -806,7 +676,7 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 
 	def getXMLentitlements(self):
 		entitleslist = []
-		webifok, result = self.openWebIF(part="entitlement", label=self.readeruser, fmt="xml")  # read XML-entitlements
+		webifok, api, url, signstatus, result = self.openWebIF(part="entitlement", label=self.readeruser, fmt="xml")  # read XML-entitlements
 		if webifok and result:
 			reader = XML(result).find("reader")
 			bgcoloridx = 0
@@ -897,42 +767,9 @@ class OSCamEntitlements(Screen, OSCamGlobals):
 
 
 class OSCamEntitleDetails(Screen, OSCamGlobals):
-	if fileExists("/tmp/.ncam/ncam.version"):
-		skin = """
-		<screen name="OSCamEntitleDetails" position="center,center" size="765,1080" backgroundColor="#10101010" title="Ncam EntitleDetails" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/NcamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
-			<widget source="Title" render="Label" position="105,15" size="660,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
-			<eLabel text="CAID" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="System" position="105,105" size="178,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Reshare" position="285,105" size="118,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="Hop" position="405,105" size="73,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="ShareID" position="480,105" size="133,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<eLabel text="RemoteID" position="615,105" size="135,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="label0" render="Label" position="15,165" size="88,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # CAID
-			<widget source="label1" render="Label" position="105,165" size="178,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # System
-			<widget source="label2" render="Label" position="285,165" size="118,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # Reshare
-			<widget source="label3" render="Label" position="405,165" size="73,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # Hop
-			<widget source="label4" render="Label" position="480,165" size="133,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # ShareID
-			<widget source="label5" render="Label" position="615,165" size="135,55" font="Regular;27" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#10fef2e6" />  # RemoteID
-			<eLabel text="ProvIDs" position="15,225" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="ProvIDlist" render="Listbox" position="15,285" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<eLabel text="Providers" position="15,485" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="Providerlist" render="Listbox" position="15,545" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<eLabel text="Nodes" position="15,745" size="735,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
-			<widget source="Nodelist" render="Listbox" position="15,805" size="735,195" font="Regular;27" itemHeight="40" foregroundColor="#00000000" backgroundColor="#10fef2e6" foregroundColorSelected="#00000000" backgroundColorSelected="#10fef2e6" halign="center" valign="center" scrollbarMode="showOnDemand" >
-				<convert type="StringList" />
-			</widget>
-			<widget source="key_exit" render="Label" position="570,1020" size="150,42" font="Regular;30" halign="center" valign="center" foregroundColor="#00000000" backgroundColor="#00ffffff" />
-		</screen>
-		"""
-	else:
-		skin = """
+	skin = """
 		<screen name="OSCamEntitleDetails" position="center,center" size="765,1080" backgroundColor="#10101010" title="OSCam EntitleDetails" flags="wfNoBorder" resolution="1920,1080">
-			<ePixmap pixmap="icons/OscamLogo.png" position="15,15" size="80,80" scale="1" alphatest="blend" />
+			<widget name="logo" position="15,15" size="80,80" zPosition="5" alphatest="blend"/>
 			<widget source="Title" render="Label" position="105,15" size="660,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<eLabel text="CAID" position="15,105" size="88,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
 			<eLabel text="System" position="105,105" size="178,58" font="Regular;27" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#105a5a5a" />
@@ -972,32 +809,40 @@ class OSCamEntitleDetails(Screen, OSCamGlobals):
 			return nlist
 
 		Screen.__init__(self, session)
-		NAMEBIN = check_NAMEBIN()
-		NAMEBIN2 = check_NAMEBIN2()
+		self["logo"] = Pixmap()
+		webifok, api, url, signstatus, result = self.openWebIF()  # read JSON-status
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.skinName = "OSCamEntitleDetails"
-		if entitlement:
-			self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1])
-			entitlelen = len(entitlement)
-			for idx in range(len(entitlement)):
-				if (idx + 1) < entitlelen:
-					self["label%s" % idx] = StaticText(entitlement[idx + 1])
-			self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)))
-			self['ProvIDlist'].selectionEnabled(0)
-			self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)))
-			self['Providerlist'].selectionEnabled(0)
-			self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)))
-			self['Nodelist'].selectionEnabled(0)
-			self["key_exit"] = StaticText(_("Exit"))
+		entitlelen = len(entitlement)
+		self.setTitle(_("Entitlements for 'CAID %s'") % entitlement[1] if entitlelen else _("n/a"))
+		for idx in range(len(entitlement)):
+			if (idx + 1) < entitlelen:
+				self["label%s" % idx] = StaticText(entitlement[idx + 1])
+		self["ProvIDlist"] = List((splitParts(entitlement[7].split(", "), 6)) if entitlelen else _("n/a"))
+		self['ProvIDlist'].selectionEnabled(0)
+		self["Providerlist"] = List((splitParts(entitlement[8].split(", "), 2)) if entitlelen else _("n/a"))
+		self['Providerlist'].selectionEnabled(0)
+		self["Nodelist"] = List((splitParts(entitlement[9].split(", "), 2)) if entitlelen else _("n/a"))
+		self['Nodelist'].selectionEnabled(0)
+		self["key_exit"] = StaticText(_("Exit"))
 		self["actions"] = HelpableActionMap(self, ["OkCancelActions"], {
 			"ok": (self.close, _("Close the screen")),
 			"cancel": (self.close, _("Close the screen")),
-			}, prio=1, description=_("%sInfo Actions") % NAMEBIN2)
+			}, prio=1, description=_("%sInfo Actions") % camname)
+		self.onLayoutFinish.append(self.onLayoutFinished)
+
+	def onLayoutFinished(self):
+		if fileExists("/tmp/.ncam/ncam.version"):
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/NcamLogo.png")
+		else:
+			Logo = resolveFilename(SCOPE_CURRENT_SKIN, "icons/OscamLogo.png")
+		self["logo"].instance.setPixmapFromFile(Logo)
 
 
 class OSCamInfoLog(Screen, OSCamGlobals):
 	skin = """
 		<screen name="OSCamInfoLog" position="center,center" size="1920,1080" backgroundColor="#10101010" title="OSCam/NcamInfo Log" flags="wfNoBorder" resolution="1920,1080">
-			<widget source="Title" render="Label" position="15,15" size="1920,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
+			<widget source="Title" render="Label" position="15,15" size="1905,60" font="Regular;40" halign="center" valign="center" foregroundColor="#00ffffff" backgroundColor="#10101010" />
 			<widget source="global.CurrentTime" render="Label" position="1635,15" size="260,60" font="Regular;40" halign="right" valign="center" foregroundColor="#0092CBDF" backgroundColor="#10101010">
 				<convert type="ClockToText">Format:%H:%M:%S</convert>
 			</widget>
@@ -1007,10 +852,10 @@ class OSCamInfoLog(Screen, OSCamGlobals):
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
-		NAMEBIN = check_NAMEBIN()
-		NAMEBIN2 = check_NAMEBIN2()
+		webifok, api, url, signstatus, result = self.openWebIF()
+		camname = {"oscamapi": ("OSCam"), "ncamapi": ("NCam")}.get(api)
 		self.skinName = "OSCamInfoLog"
-		self.setTitle(_("%sInfo: Log") % NAMEBIN2)
+		self.setTitle(_("%sInfo: Log") % camname)
 		self["logtext"] = ScrollLabel(_("<no log found>"))
 		self["actions"] = HelpableActionMap(self, ["NavigationActions", "OkCancelActions"], {
 			"ok": (self.exit, _("Close the screen")),
@@ -1019,7 +864,7 @@ class OSCamInfoLog(Screen, OSCamGlobals):
 			"up": (self.keyPageUp, _("Move up a page")),
 			"down": (self.keyPageDown, _("Move down a page")),
 			"pageDown": (self.keyPageDown, _("Move down a page"))
-			}, prio=1, description=_("%sInfo Log Actions") % NAMEBIN2)
+			}, prio=1, description=_("%sInfo Log Actions") % camname)
 		self.loop = eTimer()
 		self.loop.callback.append(self.displayLog)
 		self.onLayoutFinish.append(self.onLayoutFinished)
@@ -1051,7 +896,43 @@ class OSCamInfoLog(Screen, OSCamGlobals):
 
 class OSCamInfoSetup(Setup):
 	def __init__(self, session):
+		self.status = None
+		self.oldIP = config.oscaminfo.ip.value
+		self.hostValidator = compile("(\d*[a-zA-Z]+[\.]*\d*)+$")
 		Setup.__init__(self, session, setup="OSCamInfoSetup")
+
+	def selectionChanged(self):
+		Setup.selectionChanged(self)
+		self.validate()
+
+	def changedEntry(self):
+		Setup.changedEntry(self)
+		self.validate()
+
+	def validate(self):
+		footnote = None
+		if self.getCurrentItem() == config.oscaminfo.ip and self.oldIP != config.oscaminfo.ip.value:
+			try:
+				if not self.hostValidator.match(config.oscaminfo.ip.value):
+					ip_address(config.oscaminfo.ip.value)
+			except ValueError:
+				footnote = _("IP address is invalid!")
+			self.setFootnote(footnote)
+			self.status = footnote
+
+	def keySave(self):
+		def keySaveCallback(result):
+			Setup.keySave(self)
+		if config.oscaminfo.ip.value != self.oldIP:
+			try:
+				getaddrinfo(config.oscaminfo.ip.value, config.oscaminfo.port.value)
+				self.status = None
+			except gaierror:
+				self.status = _("Hostname cannot be resolved to IP address!")
+		if self.status:
+			self.session.openWithCallback(keySaveCallback, MessageBox, self.status, type=MessageBox.TYPE_WARNING)
+		else:
+			Setup.keySave(self)
 
 
 class OscamInfoMenu(OSCamInfo):
