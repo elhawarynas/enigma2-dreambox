@@ -709,8 +709,8 @@ class DeviceManager(Screen):
 					else:
 						title = _("Select the new mount point for: '%s'") % storageDevice.get("model")
 						fstab = fileReadLines("/etc/fstab", default=[], source=MODULE_NAME)
-						choiceList = [(f"/media/{x}", f"/media/{x}") for x in self.storageDevices.getMountPoints(storageDevice.get("deviceType"), fstab, onlyPossible=True)]
-						self.session.openWithCallback(keyBlueCallback, ChoiceBox, choiceList=choiceList, buttonList=[], windowTitle=title)
+						list = [(f"/media/{x}", f"/media/{x}") for x in self.storageDevices.getMountPoints(storageDevice.get("deviceType"), fstab, onlyPossible=True)]
+						self.session.openWithCallback(keyBlueCallback, ChoiceBox, choiceList=list, buttonList=[], windowTitle=title)
 				self.updateDevices()
 
 	def updateDevices(self):
