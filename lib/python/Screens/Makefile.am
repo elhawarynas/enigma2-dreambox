@@ -14,7 +14,7 @@ install_PYTHON = \
 	SubtitleDisplay.py SubservicesQuickzap.py ParentalControlSetup.py NumericalTextInputHelpDialog.py \
 	SleepTimerEdit.py Opkg.py RdsDisplay.py Globals.py \
 	SessionGlobals.py LocationBox.py WizardLanguage.py TaskList.py TaskView.py Rc.py VirtualKeyBoard.py \
-	TextBox.py FactoryReset.py Recording.py UnhandledKey.py ServiceStopScreen.py \
+	TextBox.py FactoryReset.py Recording.py UnhandledKey.py ServiceStopScreen.py SwapManager.py \
 	InputDeviceSetup.py DVD.py SoftwareUpdate.py AutoDiseqc.py InstallWizard.py ScreenSaver.py \
 	Hotkey.py StreamingClientsInfo.py SoftcamSetup.py FlashManager.py SetupFallbacktuner.py \
 	SkinSelector.py LogManager.py OScamInfo.py Time.py CronTimer.py OSDCalibration.py
