@@ -1,5 +1,5 @@
-from Screens.Screen import Screen
 # -*- coding: utf-8 -*-
+from Screens.Screen import Screen
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
 from Components.config import config, configfile, ConfigYesNo
@@ -10,7 +10,7 @@ from Components.Harddisk import harddiskmanager, getProcMounts
 from Components.Console import Console
 from Components.Sources.StaticText import StaticText
 from os import system, stat as mystat, path, remove, rename
-from enigma import eTimer
+from enigma import eTimer, getDesktop
 from glob import glob
 import stat
 import six
@@ -18,6 +18,14 @@ import six
 config.usage.swapautostart = ConfigYesNo(default=False)
 
 startswap = None
+
+def getDesktopSize():
+	s = getDesktop(0).size()
+	return (s.width(), s.height())
+
+def isHD():
+	desktopSize = getDesktopSize()
+	return desktopSize[0] == 1280
 
 
 def SwapAutostart():
@@ -71,25 +79,46 @@ class StartSwap:
 
 
 class Swap(Screen):
-	skin = """
-	<screen name="Swap" position="center,center" size="420,250" title="Swap File Manager" flags="wfBorder" resolution="1280,720">
-		<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
-		<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
-		<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
-		<widget name="key_red" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
-		<widget name="key_green" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
-		<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
-		<widget name="autostart_off" position="10,50" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32" alphatest="on" />
-		<widget name="autostart_on" position="10,50" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32" alphatest="on" />
-		<widget name="lab1" position="50,50" size="360,30" font="Regular;20" valign="center" transparent="1"/>
-		<widget name="lab2" position="10,100" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-		<widget name="lab3" position="10,150" size="150,30" font="Regular;20" valign="center" transparent="1"/>
-		<widget name="lab4" position="10,200" size="150,30" font="Regular;20" valign="center" transparent="1" />
-		<widget name="labplace" position="160,100" size="220,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-		<widget name="labsize" position="160,150" size="220,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
-		<widget name="inactive" position="160,200" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="red"/>
-		<widget name="active" position="160,200" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="green"/>
-	</screen>"""
+	if isHD():
+		skin = """
+		<screen name="Swap" position="center,center" size="420,250" title="Swap File Manager" flags="wfBorder" backgroundColor="#16000000" resolution="1280,720">
+			<ePixmap pixmap="skin_default/buttons/red.png" position="0,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/green.png" position="140,0" size="140,40" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/yellow.png" position="280,0" size="140,40" alphatest="on" />
+			<widget name="key_red" position="0,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#9f1313" transparent="1" />
+			<widget name="key_green" position="140,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#1f771f" transparent="1" />
+			<widget name="key_yellow" position="280,0" zPosition="1" size="140,40" font="Regular;20" halign="center" valign="center" backgroundColor="#a08500" transparent="1" />
+			<widget name="autostart_off" position="10,50" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32" alphatest="on" />
+			<widget name="autostart_on" position="10,50" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32" alphatest="on" />
+			<widget name="lab1" position="50,50" size="360,30" font="Regular;20" valign="center" transparent="1"/>
+			<widget name="lab2" position="10,100" size="150,30" font="Regular;20" valign="center" transparent="1"/>
+			<widget name="lab3" position="10,150" size="150,30" font="Regular;20" valign="center" transparent="1"/>
+			<widget name="lab4" position="10,200" size="150,30" font="Regular;20" valign="center" transparent="1" />
+			<widget name="labplace" position="160,100" size="220,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
+			<widget name="labsize" position="160,150" size="220,30" font="Regular;20" valign="center" backgroundColor="#4D5375"/>
+			<widget name="inactive" position="160,200" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="red"/>
+			<widget name="active" position="160,200" size="100,30" font="Regular;20" valign="center" halign="center" backgroundColor="green"/>
+		</screen>"""
+	else:
+		skin = """
+		<screen name="Swap" position="center,center" size="1260,644" title="Swap File Manager" flags="wfBorder" backgroundColor="#16000000" resolution="1920,1080">
+			<eLabel position="85,5" size="250,10" foregroundColor="#00ff2525" backgroundColor="#00ff2525" transparent="0"/>
+			<eLabel position="500,5" size="250,10" foregroundColor="#00389416" backgroundColor="#00389416" transparent="0"/>
+			<eLabel position="905,5" size="250,10" foregroundColor="#00bab329" backgroundColor="#00bab329" transparent="0"/>
+			<widget name="key_red" position="85,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ff9f1313" transparent="1"/>
+			<widget name="key_green" position="500,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ff1f771f" transparent="1"/>
+			<widget name="key_yellow" position="905,5" zPosition="1" size="250,60" font="Regular;35" halign="center" valign="center" backgroundColor="#ffa08500" transparent="1"/>
+			<widget name="autostart_off" position="20,123" zPosition="1" pixmap="skin_default/icons/lock_off.png" size="32,32" alphatest="on" />
+			<widget name="autostart_on" position="20,123" zPosition="2" pixmap="skin_default/icons/lock_on.png" size="32,32" alphatest="on" />
+			<widget name="lab1" position="75,118" size="848,63" font="Regular;35" valign="center" transparent="1"/>
+			<widget name="lab2" position="30,255" size="305,55" font="Regular;35" valign="center" transparent="1"/>
+			<widget name="lab3" position="30,385" size="305,55" font="Regular;35" valign="center" transparent="1"/>
+			<widget name="lab4" position="30,505" size="305,55" font="Regular;35" valign="center" transparent="1" />
+			<widget name="labplace" position="355,245" size="807,77" font="Regular;35" valign="center" backgroundColor="#4D5375"/>
+			<widget name="labsize" position="355,375" size="807,77" font="Regular;35" valign="center" backgroundColor="#4D5375"/>
+			<widget name="inactive" position="358,495" size="282,77" font="Regular;35" valign="center" halign="center" backgroundColor="red"/>
+			<widget name="active" position="358,495" size="282,77" font="Regular;35" valign="center" halign="center" backgroundColor="green"/>
+		</screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
