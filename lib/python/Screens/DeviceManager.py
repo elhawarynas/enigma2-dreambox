@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
 #
 #Copyright (c) 2024-2025 jbleyel
@@ -35,7 +34,7 @@ from os import mkdir
 from os.path import exists, join, realpath
 from re import search, split, sub
 
-from enigma import getDeviceDB
+from enigma import getDeviceDB, getDesktop
 
 from Components.ActionMap import HelpableActionMap
 from Components.config import ConfigSelection, ConfigText, NoSave
@@ -57,6 +56,14 @@ from Tools.LoadPixmap import LoadPixmap
 from Tools.Directories import SCOPE_GUISKIN, fileReadLine, fileReadLines, fileWriteLines, resolveFilename
 
 MODULE_NAME = __name__.split(".")[-1]
+
+def getDesktopSize():
+	s = getDesktop(0).size()
+	return (s.width(), s.height())
+
+def isHD():
+	desktopSize = getDesktopSize()
+	return desktopSize[0] == 1280
 
 
 class StorageDeviceAction(Setup):
@@ -457,40 +464,76 @@ class DeviceManager(Screen):
 	DEVICE_TYPES_NAME = 0
 	DEVICE_TYPES_ICON = 1
 
-	skin = """
-	<screen name="DeviceManager" title="Device Manager" position="center,center" size="1080,465" resolution="1280,720">
-		<widget source="devicelist" render="Listbox" position="0,0" size="1080,325">
-			<templates>
-				<template name="Default" fonts="Regular;20,Regular;24" itemHeight="30">
-					<mode name="default">
-						<text index="Device" position="34,0" size="220,30" font="0" />
-						<text index="DeviceIndent" position="52,0" size="220,30" font="0" />
-						<text index="Description" position="450,0" size="400,30" font="0" verticalAlignment="top" horizontalAlignment="left" />
-						<text index="Size" position="900,0" size="180,30" font="0" verticalAlignment="top" horizontalAlignment="right" />
-						<text index="PartitionSeparator" position="6,6" size="30,30" font="1" verticalAlignment="center" />
-						<pixmap index="Image" position="0,0" size="30,30" alpha="blend" scale="centerScaled" />
-					</mode>
-				</template>
-			</templates>
-		</widget>
-		<eRectangle position="0,328" size="e,1" />
-		<widget name="description" position="0,330" size="e,100" font="Regular;20" verticalAlignment="top" horizontalAlignment="left" />
-		<widget source="key_red" render="Label" position="0,e-40" size="180,40" backgroundColor="key_red" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-			<convert type="ConditionalShowHide" />
-		</widget>
-		<widget source="key_green" render="Label" position="190,e-40" size="180,40" backgroundColor="key_green" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-			<convert type="ConditionalShowHide" />
-		</widget>
-		<widget source="key_yellow" render="Label" position="380,e-40" size="180,40" backgroundColor="key_yellow" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-			<convert type="ConditionalShowHide" />
-		</widget>
-		<widget source="key_blue" render="Label" position="570,e-40" size="180,40" backgroundColor="key_blue" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-			<convert type="ConditionalShowHide" />
-		</widget>
-		<widget source="key_help" render="Label" position="e-80,e-40" size="80,40" backgroundColor="key_back" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-			<convert type="ConditionalShowHide" />
-		</widget>
-	</screen>"""
+	if isHD():
+		skin = """
+		<screen name="DeviceManager" title="Device Manager" position="center,center" size="1080,465" backgroundColor="#16000000" resolution="1280,720">
+			<widget source="devicelist" render="Listbox" position="0,0" size="1080,325" backgroundColor="#16000000">
+				<templates>
+					<template name="Default" fonts="Regular;20,Regular;24" itemHeight="30">
+						<mode name="default">
+							<text index="Device" position="34,0" size="220,30" font="0" />
+							<text index="DeviceIndent" position="52,0" size="220,30" font="0" />
+							<text index="Description" position="450,0" size="400,30" font="0" verticalAlignment="top" horizontalAlignment="left" />
+							<text index="Size" position="900,0" size="180,30" font="0" verticalAlignment="top" horizontalAlignment="right" />
+							<text index="PartitionSeparator" position="6,6" size="30,30" font="1" verticalAlignment="center" />
+							<pixmap index="Image" position="0,0" size="30,30" alpha="blend" scale="centerScaled" />
+						</mode>
+					</template>
+				</templates>
+			</widget>
+			<eRectangle position="0,328" size="e,1" />
+			<widget name="description" position="0,330" size="e,100" font="Regular;20" backgroundColor="#16000000" verticalAlignment="top" horizontalAlignment="left" />
+			<widget source="key_red" render="Label" position="0,e-40" size="180,40" backgroundColor="key_red" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_green" render="Label" position="190,e-40" size="180,40" backgroundColor="key_green" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_yellow" render="Label" position="380,e-40" size="180,40" backgroundColor="key_yellow" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_blue" render="Label" position="570,e-40" size="180,40" backgroundColor="key_blue" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_help" render="Label" position="e-80,e-40" size="80,40" backgroundColor="key_back" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+		</screen>"""
+	else:
+		skin = """
+		<screen name="DeviceManager" title="Device Manager" position="center,center" size="1700,900" backgroundColor="#16000000" resolution="1920,1080">
+			<widget source="devicelist" render="Listbox" position="10,10" size="1870,600" backgroundColor="#16000000">
+				<templates>
+					<template name="Default" fonts="Regular;28,Regular;32" itemHeight="40">
+						<mode name="default">
+							<text index="Device" position="34,0" size="220,30" font="0" />
+							<text index="DeviceIndent" position="90,0" size="220,30" font="0" />
+							<text index="Description" position="650,0" size="600,30" font="0" verticalAlignment="top" horizontalAlignment="left" />
+							<text index="Size" position="1480,0" size="180,30" font="0" verticalAlignment="top" horizontalAlignment="right" />
+							<text index="PartitionSeparator" position="6,6" size="30,30" font="1" verticalAlignment="center" />
+							<pixmap index="Image" position="0,0" size="30,30" alpha="blend" scale="centerScaled" />
+						</mode>
+					</template>
+				</templates>
+			</widget>
+			<eRectangle position="0,328" size="e,1" />
+			<widget name="description" position="10,650" size="e,150" font="Regular;30" backgroundColor="#16000000" verticalAlignment="top" horizontalAlignment="left" />
+			<widget source="key_red" render="Label" position="0,e-40" size="180,50" backgroundColor="key_red" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_green" render="Label" position="190,e-40" size="180,50" backgroundColor="key_green" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_yellow" render="Label" position="380,e-40" size="180,50" backgroundColor="key_yellow" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_blue" render="Label" position="570,e-40" size="180,50" backgroundColor="key_blue" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+			<widget source="key_help" render="Label" position="e-80,e-40" size="80,50" backgroundColor="key_back" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+				<convert type="ConditionalShowHide" />
+			</widget>
+		</screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session, mandatoryWidgets=["devicelist"], enableHelp=True)
