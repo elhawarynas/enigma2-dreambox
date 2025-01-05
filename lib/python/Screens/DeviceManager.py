@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License
 #
 #Copyright (c) 2024-2025 jbleyel
@@ -710,7 +711,7 @@ class DeviceManager(Screen):
 						title = _("Select the new mount point for: '%s'") % storageDevice.get("model")
 						fstab = fileReadLines("/etc/fstab", default=[], source=MODULE_NAME)
 						list = [(f"/media/{x}", f"/media/{x}") for x in self.storageDevices.getMountPoints(storageDevice.get("deviceType"), fstab, onlyPossible=True)]
-						self.session.openWithCallback(keyBlueCallback, ChoiceBox, choiceList=list, buttonList=[], windowTitle=title)
+						self.session.openWithCallback(keyBlueCallback, ChoiceBox, list=list, keys=[], windowTitle=title)
 				self.updateDevices()
 
 	def updateDevices(self):
