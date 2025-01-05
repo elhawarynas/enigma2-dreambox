@@ -1453,7 +1453,7 @@ class InfoBarEPG:
 	def showEventInfoPlugins(self):
 		pluginlist = self.getEPGPluginList()
 		if pluginlist:
-			self.session.openWithCallback(self.EventInfoPluginChosen, ChoiceBox, title=_("Please choose an extension..."), list=pluginlist, skin_name="EPGExtensionsList", reorderConfig="eventinfo_order", windowTitle=_("Events info menu"))
+			self.session.openWithCallback(self.EventInfoPluginChosen, ChoiceBox, title=_("Please choose an extension..."), list=pluginlist, skin_name="EPGExtensionsList", reorderConfig="eventinfoOrder", windowTitle=_("Events info menu"))
 		else:
 			self.openSingleServiceEPG()
 
@@ -2473,7 +2473,7 @@ class ExtensionsList(ChoiceBox):
 			extensionKeys.append(key or "")
 			extensionList.append((extension[0], extension[1]))
 
-		reorderConfig = "extension_order" if config.usage.sortExtensionslist.value == "user" else ""
+		reorderConfig = "extensionOrder" if config.usage.sortExtensionslist.value == "user" else ""
 		ChoiceBox.__init__(self, session, title=_("Please choose an extension..."), list=extensionList, keys=extensionKeys, reorderConfig=reorderConfig, skin_name="ExtensionsList")
 
 
