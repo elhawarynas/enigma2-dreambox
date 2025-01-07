@@ -34,7 +34,7 @@ class InfoBarScreenSaver:
 
 	def screenSaverTimerStart(self):
 		startTimer = config.usage.screenSaverStartTimer.value
-		time = int(config.usage.screen_saver.value)
+		time = int(config.usage.screenSaverStartTimer.value)
 		flag = hasattr(self, "seekstate") and self.seekstate[0]
 		pip_show = hasattr(self.session, "pipshown") and self.session.pipshown
 		if not flag:
