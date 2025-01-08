@@ -11,7 +11,7 @@ from Components.Renderer.FrontpanelLed import ledPatterns, PATTERN_ON, PATTERN_O
 from Components.ServiceList import refreshServiceList
 from Components.SystemInfo import BoxInfo
 from skin import getcomponentTemplateNames, parameters, domScreens
-from os import makedirs
+from os import makedirs, unlink
 from os.path import exists, isfile, join as pathjoin, normpath
 import os, time, locale
 from boxbranding import getDisplayType
@@ -1346,6 +1346,16 @@ def InitUsageConfig():
 
 	config.crash.pystackonspinner = ConfigYesNo(default=False)
 	config.crash.pystackonspinner.addNotifier(updateStackTracePrinter, immediate_feedback=False, initial_call=True)
+
+	def debugStorageChanged(configElement):
+		udevDebugFile = "/etc/udev/udev.debug"
+		if configElement.value:
+			fileWriteLine(udevDebugFile, "", source=MODULE_NAME)
+		elif exists(udevDebugFile):
+			unlink(udevDebugFile)
+		harddiskmanager.debug = configElement.value
+
+	config.crash.debugStorage.addNotifier(debugStorageChanged)
 
 	config.seek = ConfigSubsection()
 	config.seek.selfdefined_13 = ConfigNumber(default=15)
