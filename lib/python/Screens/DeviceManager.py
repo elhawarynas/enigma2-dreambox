@@ -476,73 +476,111 @@ class DeviceManager(Screen):
 
 	if isHD():
 		skin = """
-		<screen name="DeviceManager" title="Device Manager" position="center,center" size="1080,465" backgroundColor="#16000000" resolution="1280,720">
-			<widget source="devicelist" render="Listbox" position="0,0" size="1080,325" backgroundColor="#16000000">
+		<screen name="DeviceManager" title="Device Manager" position="0,0" size="1280,720" backgroundColor="#1a0f0f0f">
+			<widget source="Title" render="Label" position="42,39" size="426,58" noWrap="1" valign="bottom" font="Regular;40" foregroundColor="#00ffffff" backgroundColor="#1a0f0f0f" transparent="1"/>
+			<widget source="devicelist" render="Listbox" backgroundColor="#1A0F0F0F" position="40,103" size="1205,400">
 				<templates>
-					<template name="Default" fonts="Regular;20,Regular;24" itemHeight="30">
+					<template name="Default" fonts="Regular;28,Regular;30" itemHeight="35">
 						<mode name="default">
-							<text index="Device" position="34,0" size="220,30" font="0" />
-							<text index="DeviceIndent" position="52,0" size="220,30" font="0" />
-							<text index="Description" position="450,0" size="400,30" font="0" verticalAlignment="top" horizontalAlignment="left" />
-							<text index="Size" position="900,0" size="180,30" font="0" verticalAlignment="top" horizontalAlignment="right" />
-							<text index="PartitionSeparator" position="6,6" size="30,30" font="1" verticalAlignment="center" />
-							<pixmap index="Image" position="0,0" size="30,30" alpha="blend" scale="centerScaled" />
+							<text index="Device" position="51,0" size="330,45" font="0" />
+							<text index="DeviceIndent" position="78,0" size="330,45" font="0" />
+							<text index="Description" position="525,0" size="600,45" font="0" verticalAlignment="top" horizontalAlignment="left" />
+							<text index="Size" position="1410,0" size="300,45" font="0" verticalAlignment="top" horizontalAlignment="right" />
+							<text index="PartitionSeparator" position="9,9" size="45,45" font="1" verticalAlignment="center" />
+							<pixmap index="Image" position="0,0" size="45,45" alpha="blend" scale="centerScaled" />
 						</mode>
 					</template>
 				</templates>
 			</widget>
-			<eRectangle position="0,328" size="e,1" />
-			<widget name="description" position="0,330" size="e,100" font="Regular;20" backgroundColor="#16000000" verticalAlignment="top" horizontalAlignment="left" />
-			<widget source="key_red" render="Label" position="0,e-40" size="180,40" backgroundColor="key_red" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="description" position="40,513" size="1205,92" font="Regular;28" verticalAlignment="top" horizontalAlignment="left" backgroundColor="#1A27408B"/>
+			<eLabel name="layer1" position="35,28" zPosition="-10" size="1213,686" backgroundColor="#1a0f0f0f"/>
+			<widget source="global.CurrentTime" render="Label" position="1065,30" size="180,68" font="Regular;45" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Default</convert>
+			</widget>
+			<widget source="global.CurrentTime" render="Label" position="820,30" size="240,30" font="Regular;20" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Format:%A</convert>
+			</widget>
+			<widget source="global.CurrentTime" render="Label" position="820,66" size="240,30" font="Regular;20" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Format:%e. %B</convert>
+			</widget>
+			<ePixmap pixmap="buttons/key_red2.png" position="53,645" size="45,45" alphatest="blend" objectTypes="key_red,Button,Label" transparent="1" />
+			<widget source="key_red" render="Pixmap" pixmap="buttons/key_red2.png" position="53,645" size="45,45" alphatest="blend" objectTypes="key_red,StaticText" transparent="1">
+			<convert type="ConditionalShowHide" />
+			</widget>
+			<widget name="key_red" position="105,647" size="200,35" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_red,Button,Label" transparent="1" />
+			<widget source="key_red" render="Label" position="105,647" size="200,35" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_red,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_green2.png" position="327,645" size="45,45" alphatest="blend" objectTypes="key_green,Button,Label" transparent="1" />
+			<widget source="key_green" render="Pixmap" pixmap="buttons/key_green2.png" position="327,645" size="45,45" alphatest="blend" objectTypes="key_green,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_green" render="Label" position="190,e-40" size="180,40" backgroundColor="key_green" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="key_green" position="380,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_green,Button,Label" transparent="1" />
+			<widget source="key_green" render="Label" position="380,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_green,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_yellow2.png" position="602,645" size="45,45" alphatest="blend" objectTypes="key_yellow,Button,Label" transparent="1" />
+			<widget source="key_yellow" render="Pixmap" pixmap="buttons/key_yellow2.png" position="602,645" size="45,45" alphatest="blend" objectTypes="key_yellow,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_yellow" render="Label" position="380,e-40" size="180,40" backgroundColor="key_yellow" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="key_yellow" position="654,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_yellow,Button,Label" transparent="1" />
+			<widget source="key_yellow" render="Label" position="654,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_yellow,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_blue2.png" position="876,645" size="45,45" alphatest="blend" objectTypes="key_blue,Button,Label" transparent="1" />
+			<widget source="key_blue" render="Pixmap" pixmap="buttons/key_blue2.png" position="876,645" size="45,45" alphatest="blend" objectTypes="key_blue,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_blue" render="Label" position="570,e-40" size="180,40" backgroundColor="key_blue" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_help" render="Label" position="e-80,e-40" size="80,40" backgroundColor="key_back" font="Regular;20" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-				<convert type="ConditionalShowHide" />
-			</widget>
+			<widget name="key_blue" position="929,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_blue,Button,Label" transparent="1" />
+			<widget source="key_blue" render="Label" position="929,647" size="200,40" noWrap="1" zPosition="+1" valign="center" font="Regular;28" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_blue,StaticText" transparent="1" />
 		</screen>"""
 	else:
 		skin = """
-		<screen name="DeviceManager" title="Device Manager" position="center,center" size="1700,900" backgroundColor="#16000000" resolution="1920,1080">
-			<widget source="devicelist" render="Listbox" position="10,10" size="1870,600" backgroundColor="#16000000">
+		<screen name="DeviceManager" title="Device Manager" position="0,0" size="1920,1080" backgroundColor="#1A0F0F0F" >
+			<widget source="Title" render="Label" position="87,54" size="788,75" noWrap="1" valign="bottom" font="Regular;50" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" halign="left" transparent="1" />
+			<widget source="devicelist" render="Listbox" backgroundColor="#1A0F0F0F" position="105,150" size="1710,630">
 				<templates>
-					<template name="Default" fonts="Regular;28,Regular;32" itemHeight="40">
+					<template name="Default" fonts="Regular;30,Regular;36" itemHeight="45">
 						<mode name="default">
-							<text index="Device" position="34,0" size="220,30" font="0" />
-							<text index="DeviceIndent" position="90,0" size="220,30" font="0" />
-							<text index="Description" position="650,0" size="600,30" font="0" verticalAlignment="top" horizontalAlignment="left" />
-							<text index="Size" position="1480,0" size="180,30" font="0" verticalAlignment="top" horizontalAlignment="right" />
-							<text index="PartitionSeparator" position="6,6" size="30,30" font="1" verticalAlignment="center" />
-							<pixmap index="Image" position="0,0" size="30,30" alpha="blend" scale="centerScaled" />
+							<text index="Device" position="51,0" size="330,45" font="0" />
+							<text index="DeviceIndent" position="78,0" size="330,45" font="0" />
+							<text index="Description" position="525,0" size="600,45" font="0" verticalAlignment="top" horizontalAlignment="left" />
+							<text index="Size" position="1410,0" size="300,45" font="0" verticalAlignment="top" horizontalAlignment="right" />
+							<text index="PartitionSeparator" position="9,9" size="45,45" font="1" verticalAlignment="center" />
+							<pixmap index="Image" position="0,0" size="45,45" alpha="blend" scale="centerScaled" />
 						</mode>
 					</template>
 				</templates>
 			</widget>
-			<eRectangle position="0,328" size="e,1" />
-			<widget name="description" position="10,650" size="e,150" font="Regular;30" backgroundColor="#16000000" verticalAlignment="top" horizontalAlignment="left" />
-			<widget source="key_red" render="Label" position="0,e-40" size="180,50" backgroundColor="key_red" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="description" position="105,783" size="1710,150" font="Regular;30" verticalAlignment="top" horizontalAlignment="left" backgroundColor="#1A27408B"/>
+			<eLabel name="layer1" position="60,38" zPosition="-10" size="1800,975" backgroundColor="#1A0F0F0F" />
+			<widget source="global.CurrentTime" render="Label" position="1640,45" size="210,90" font="Regular;60" noWrap="1" halign="center" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Default</convert>
+			</widget>
+			<widget source="global.CurrentTime" render="Label" position="1400,45" size="240,41" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Format:%A</convert>
+			</widget>
+			<widget source="global.CurrentTime" render="Label" position="1400,81" size="240,41" font="Regular;24" noWrap="1" halign="right" valign="bottom" foregroundColor="#00FFFFFF" backgroundColor="#1A0F0F0F" transparent="1">
+				<convert type="ClockToText">Format:%e. %B</convert>
+			</widget>
+			<ePixmap pixmap="buttons/key_red2.png" position="53,953" size="45,45" alphatest="blend" objectTypes="key_red,Button,Label" transparent="1" />
+			<widget source="key_red" render="Pixmap" pixmap="buttons/key_red2.png" position="53,953" size="45,45" alphatest="blend" objectTypes="key_red,StaticText" transparent="1">
+			<convert type="ConditionalShowHide" />
+			</widget>
+			<widget name="key_red" position="105,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_red,Button,Label" transparent="1" />
+			<widget source="key_red" render="Label" position="105,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_red,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_green2.png" position="327,953" size="45,45" alphatest="blend" objectTypes="key_green,Button,Label" transparent="1" />
+			<widget source="key_green" render="Pixmap" pixmap="buttons/key_green2.png" position="327,953" size="45,45" alphatest="blend" objectTypes="key_green,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_green" render="Label" position="190,e-40" size="180,50" backgroundColor="key_green" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="key_green" position="380,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_green,Button,Label" transparent="1" />
+			<widget source="key_green" render="Label" position="380,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_green,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_yellow2.png" position="602,953" size="45,45" alphatest="blend" objectTypes="key_yellow,Button,Label" transparent="1" />
+			<widget source="key_yellow" render="Pixmap" pixmap="buttons/key_yellow2.png" position="602,953" size="45,45" alphatest="blend" objectTypes="key_yellow,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_yellow" render="Label" position="380,e-40" size="180,50" backgroundColor="key_yellow" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
+			<widget name="key_yellow" position="654,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_yellow,Button,Label" transparent="1" />
+			<widget source="key_yellow" render="Label" position="654,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_yellow,StaticText" transparent="1" />
+			<ePixmap pixmap="buttons/key_blue2.png" position="876,953" size="45,45" alphatest="blend" objectTypes="key_blue,Button,Label" transparent="1" />
+			<widget source="key_blue" render="Pixmap" pixmap="buttons/key_blue2.png" position="876,953" size="45,45" alphatest="blend" objectTypes="key_blue,StaticText" transparent="1">
 				<convert type="ConditionalShowHide" />
 			</widget>
-			<widget source="key_blue" render="Label" position="570,e-40" size="180,50" backgroundColor="key_blue" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-				<convert type="ConditionalShowHide" />
-			</widget>
-			<widget source="key_help" render="Label" position="e-80,e-40" size="80,50" backgroundColor="key_back" font="Regular;30" foregroundColor="key_text" horizontalAlignment="center" noWrap="1" verticalAlignment="center">
-				<convert type="ConditionalShowHide" />
-			</widget>
+			<widget name="key_blue" position="929,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_blue,Button,Label" transparent="1" />
+			<widget source="key_blue" render="Label" position="929,957" size="255,45" noWrap="1" zPosition="+1" valign="center" font="Regular;30" halign="left" backgroundColor="#1A0F0F0F" foregroundColor="#00FFFFFF" objectTypes="key_blue,StaticText" transparent="1" />
 		</screen>"""
 
 	def __init__(self, session):
