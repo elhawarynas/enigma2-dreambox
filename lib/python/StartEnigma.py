@@ -532,6 +532,9 @@ from Components.VolumeControl import VolumeControl
 enigma.eProfileWrite("Load:Processing")
 from Screens.Processing import Processing
 
+enigma.eProfileWrite("ModalMessageBox")
+from Screens.MessageBox import ModalMessageBox
+
 enigma.eProfileWrite("Load:StackTracePrinter")
 from Components.StackTrace import StackTracePrinter
 StackTracePrinterInst = StackTracePrinter()
@@ -585,6 +588,8 @@ def runScreenTest():
 	vol = VolumeControl(session)
 	enigma.eProfileWrite("InitProcessing")
 	processing = Processing(session)
+	enigma.eProfileWrite("Global MessageBox Screen")
+	modalmessagebox = ModalMessageBox(session)
 	enigma.eProfileWrite("Init:PowerKey")
 	power = PowerKey(session)
 
