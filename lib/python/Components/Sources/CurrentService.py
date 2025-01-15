@@ -47,7 +47,7 @@ class CurrentService(PerServiceBase, Source):
 		if NavigationInstance.instance is not None:
 			return self.srv or NavigationInstance.instance.getCurrentlyPlayingServiceOrGroup()
 		return None
-	
+
 	def setCurrentServiceRef(self, ref):
 		self.ref = ref
 
