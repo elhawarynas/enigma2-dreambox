@@ -176,6 +176,7 @@ def InitUsageConfig():
 	config.usage.servicelist_number_of_services = ConfigSelection(default="by skin", choices=choicelist)
 	config.usage.servicelist_number_of_services.addNotifier(refreshServiceList)
 	config.usage.multiepg_ask_bouquet = ConfigYesNo(default=False)
+	config.usage.showpicon = ConfigYesNo(default=True)
 
 	# New ServiceList
 	config.channelSelection = ConfigSubsection()

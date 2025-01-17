@@ -152,6 +152,8 @@ class Picon(Renderer):
 				pngname = piconLocator.getPiconName(self.source.text)
 				if not exists(pngname): # no picon for service found
 					pngname = self.defaultpngname
+				if not config.usage.showpicon.value: # disabe picon on infobar
+					pngname = self.defaultpngname
 				if self.pngname != pngname:
 					if pngname:
 						self.instance.setScale(1)
