@@ -4,6 +4,7 @@ from os.path import exists, getsize, isdir, join
 from re import sub
 from unicodedata import normalize
 from enigma import ePixmap
+from Components.config import config
 from Components.Harddisk import harddiskmanager
 from Components.Renderer.Renderer import Renderer
 from ServiceReference import ServiceReference
