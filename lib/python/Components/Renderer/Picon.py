@@ -41,7 +41,7 @@ class PiconLocator:
 
 	def onMountpointRemoved(self, mountpoint):
 		for piconDirectory in self.piconDirectories:
-			path = join(mountpoint, self.piconDirectories) + "/"
+			path = join(mountpoint, piconDirectory) + "/"
 			try:
 				self.searchPaths.remove(path)
 				print(f"[Picon] removed path: {path}")
