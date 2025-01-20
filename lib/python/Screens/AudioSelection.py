@@ -336,7 +336,6 @@ class AudioSelection(ConfigListScreen, Screen):
 							description = types[x[2]]
 						except:
 							description = _("unknown") + ": %s" % x[2]
-						number = str(int(number) + 1)
 
 					streams.append((x, "", number, description, language, selected))
 					idx += 1
