@@ -33,6 +33,7 @@ config.crash.debugDVBTime = ConfigYesNo(default=False)
 config.crash.debugDVB = ConfigYesNo(default=False)
 config.crash.debugInternational = ConfigYesNo(default=False)
 config.crash.debugTeletext = ConfigYesNo(default=False)
+config.crash.debugStorage = ConfigYesNo(default=False)
 
 # config.plugins needs to be defined before InputDevice < HelpMenu < MessageBox < InfoBar.
 config.plugins = ConfigSubsection()
@@ -531,6 +532,9 @@ from Components.VolumeControl import VolumeControl
 enigma.eProfileWrite("Load:Processing")
 from Screens.Processing import Processing
 
+enigma.eProfileWrite("ModalMessageBox")
+from Screens.MessageBox import ModalMessageBox
+
 enigma.eProfileWrite("Load:StackTracePrinter")
 from Components.StackTrace import StackTracePrinter
 StackTracePrinterInst = StackTracePrinter()
@@ -584,8 +588,13 @@ def runScreenTest():
 	vol = VolumeControl(session)
 	enigma.eProfileWrite("InitProcessing")
 	processing = Processing(session)
+	enigma.eProfileWrite("Global MessageBox Screen")
+	modalmessagebox = ModalMessageBox(session)
 	enigma.eProfileWrite("Init:PowerKey")
 	power = PowerKey(session)
+
+	from Screens.SwapManager import SwapAutostart
+	SwapAutostart()
 
 	# we need session.scart to access it from within menu.xml
 	session.scart = AutoScartControl(session)

@@ -11,7 +11,7 @@ from Components.Renderer.FrontpanelLed import ledPatterns, PATTERN_ON, PATTERN_O
 from Components.ServiceList import refreshServiceList
 from Components.SystemInfo import BoxInfo
 from skin import getcomponentTemplateNames, parameters, domScreens
-from os import makedirs
+from os import makedirs, unlink
 from os.path import exists, isfile, join as pathjoin, normpath
 import os, time, locale
 from boxbranding import getDisplayType
@@ -97,7 +97,7 @@ def InitUsageConfig():
 		(2, _("IPv4 only")),
 		(3, _("IPv6 only"))
 	])
-	config.usage.dnsSuffix = ConfigText(default="")
+	config.usage.dnsSuffix = ConfigText(default="", fixed_size=False)
 	config.usage.dnsRotate = ConfigYesNo(default=False)
 	config.usage.subnetwork = ConfigYesNo(default=True)
 	config.usage.subnetwork_cable = ConfigYesNo(default=True)
@@ -176,6 +176,7 @@ def InitUsageConfig():
 	config.usage.servicelist_number_of_services = ConfigSelection(default="by skin", choices=choicelist)
 	config.usage.servicelist_number_of_services.addNotifier(refreshServiceList)
 	config.usage.multiepg_ask_bouquet = ConfigYesNo(default=False)
+	config.usage.showpicon = ConfigYesNo(default=True)
 
 	# New ServiceList
 	config.channelSelection = ConfigSubsection()
@@ -264,7 +265,13 @@ def InitUsageConfig():
 	for i in (3600, 7200, 14400):
 		h = i / 3600
 		choicelist.append((str(i), ngettext("%d hour", "%d hours", h) % h))
-	config.usage.hdd_standby = ConfigSelection(default="300", choices=[("0", _("No standby"))] + choicelist)
+	choiceList = [
+		("0", _("No standby"))
+	] + [(str(x), _("%d Seconds") % x) for x in (10, 30)] + [(str(x * 60), ngettext("%d Minute", "%d Minutes", x) % x) for x in (1, 2, 5, 10, 20, 30)] + [(str(x * 3600), ngettext("%d Hour", "%d Hours", x) % x) for x in (1, 2, 4)]
+	config.usage.hdd_standby = ConfigSelection(default="300", choices=choiceList)
+	config.usage.hdd_standby_in_standby = ConfigSelection(default="-1", choices=[("-1", _("Same as in active"))] + choiceList)
+	config.usage.hdd_timer = ConfigYesNo(default=False)
+	config.usage.showUnknownDevices = ConfigYesNo(default=False)
 	config.usage.output_12V = ConfigSelection(default="do not change", choices=[
 		("do not change", _("Do not change")), ("off", _("Off")), ("on", _("On"))])
 
@@ -483,10 +490,8 @@ def InitUsageConfig():
 	config.usage.standby_to_shutdown_timer_blocktime_begin = ConfigClock(default=time.mktime((1970, 1, 1, 6, 0, 0, 0, 0, 0)))
 	config.usage.standby_to_shutdown_timer_blocktime_end = ConfigClock(default=time.mktime((1970, 1, 1, 23, 0, 0, 0, 0, 0)))
 
-	choicelist = [("0", _("Disabled"))]
-	for m in (1, 5, 10, 15, 30, 60):
-		choicelist.append((str(m * 60), ngettext("%d minute", "%d minutes", m) % m))
-	config.usage.screen_saver = ConfigSelection(default="300", choices=choicelist)
+	config.usage.screenSaverStartTimer = ConfigSelection(default=0, choices=[(0, _("Disabled"))] + [(x, _("%d Seconds") % x) for x in (5, 10, 20, 30, 40, 50)] + [(x * 60, ngettext("%d Minute", "%d Minutes", x) % x) for x in (1, 5, 10, 15, 20, 30, 45, 60)])
+	config.usage.screenSaverMoveTimer = ConfigSelection(default=10, choices=[(x, ngettext("%d Second", "%d Seconds", x) % x) for x in range(1, 61)])
 
 	config.usage.check_timeshift = ConfigYesNo(default=True)
 
@@ -1344,6 +1349,16 @@ def InitUsageConfig():
 	config.crash.pystackonspinner = ConfigYesNo(default=False)
 	config.crash.pystackonspinner.addNotifier(updateStackTracePrinter, immediate_feedback=False, initial_call=True)
 
+	def debugStorageChanged(configElement):
+		udevDebugFile = "/etc/udev/udev.debug"
+		if configElement.value:
+			fileWriteLine(udevDebugFile, "", source=MODULE_NAME)
+		elif exists(udevDebugFile):
+			unlink(udevDebugFile)
+		harddiskmanager.debug = configElement.value
+
+	config.crash.debugStorage.addNotifier(debugStorageChanged)
+
 	config.seek = ConfigSubsection()
 	config.seek.selfdefined_13 = ConfigNumber(default=15)
 	config.seek.selfdefined_46 = ConfigNumber(default=60)
@@ -1663,7 +1678,7 @@ def InitUsageConfig():
 	def setDVBSubtitleColor(configElement):
 		eSubtitleSettings.setDVBSubtitleColor(configElement.value)
 
-	config.subtitles.dvb_subtitles_color = ConfigSelection(default="0", choices=[("0", _("Off")), ("1", _("Yellow")), ("2", _("Green")), ("3", _("Magenta")), ("4", _("Cyan"))])
+	config.subtitles.dvb_subtitles_color = ConfigSelection(default=0, choices=[(0, _("Original")), (1, _("Yellow")), (2, _("Green")), (3, _("Magenta")), (4, _("Cyan"))])
 	config.subtitles.dvb_subtitles_color.addNotifier(setDVBSubtitleColor)
 
 	def setDVBSubtitleOriginalPosition(configElement):
